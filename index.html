@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/shop-modal.css" />
 </head>
 <body>
 
@@ -125,57 +126,18 @@
   </div>
 </section>
 
-<!-- SHOP -->
+<!-- SHOP — live from Trinity CRM -->
 <section class="shop section" id="shop">
   <div class="container">
     <p class="section__label">Бьюти-эссенциалы</p>
     <h2 class="section__title">Магазин</h2>
-    <div class="shop__grid">
-      <div class="product-card">
-        <div class="product-card__img">
-          <img src="media/img/IMG-20260226-WA0012.jpg" alt="Продукт" />
-          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
-        </div>
-        <div class="product-card__info">
-          <h4>Люкс-сыворотка для лица</h4>
-          <p class="product-card__sub">Увлажнение &amp; Сияние</p>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-card__img">
-          <img src="media/img/IMG-20260226-WA0013.jpg" alt="Продукт" />
-          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
-        </div>
-        <div class="product-card__info">
-          <h4>Бархатная коллекция помад</h4>
-          <p class="product-card__sub">12 фирменных оттенков</p>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-card__img">
-          <img src="media/img/IMG-20260226-WA0014.jpg" alt="Продукт" />
-          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
-        </div>
-        <div class="product-card__info">
-          <h4>Палетка для глаз Noir</h4>
-          <p class="product-card__sub">Смоки &amp; Чёткость</p>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-card__img">
-          <img src="media/img/IMG-20260226-WA0015.jpg" alt="Продукт" />
-          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
-        </div>
-        <div class="product-card__info">
-          <h4>Масло для тела с сиянием</h4>
-          <p class="product-card__sub">Сияние на 24 часа</p>
-        </div>
-      </div>
+    <div class="shop__grid" id="shopGrid">
+      <!-- Товары загружаются из Trinity -->
     </div>
   </div>
 </section>
 
-<!-- GALLERY — infinite loop -->
+<!-- GALLERY -->
 <section class="gallery section">
   <div class="container">
     <p class="section__label">Визуал</p>
@@ -209,21 +171,9 @@
     <h2 class="section__title section__title--light">Создадим что-то <em>вместе</em></h2>
     <p class="collab__desc">Я сотрудничаю с бьюти-брендами, модными марками и лайфстайл-компаниями — создаю аутентичный спонсорский контент, обзоры продуктов и рекламные истории, которые находят отклик у моей аудитории.</p>
     <div class="collab__cards">
-      <div class="collab-card">
-        <div class="collab-card__icon">✦</div>
-        <h4>Спонсорские посты</h4>
-        <p>Размещения в Instagram и Facebook с искренним сторителлингом</p>
-      </div>
-      <div class="collab-card">
-        <div class="collab-card__icon">✦</div>
-        <h4>Обзоры продуктов</h4>
-        <p>Честные, детальные отзывы, которым доверяет моя аудитория</p>
-      </div>
-      <div class="collab-card">
-        <div class="collab-card__icon">✦</div>
-        <h4>Бренд-кампании</h4>
-        <p>Полное творческое руководство, фотография и видеоконтент</p>
-      </div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Спонсорские посты</h4><p>Размещения в Instagram и Facebook с искренним сторителлингом</p></div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Обзоры продуктов</h4><p>Честные, детальные отзывы, которым доверяет моя аудитория</p></div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Бренд-кампании</h4><p>Полное творческое руководство, фотография и видеоконтент</p></div>
     </div>
     <a href="#contact" class="btn btn--gold">Написать мне</a>
   </div>

@@ -1,5 +1,7 @@
 // ─── Config ──────────────────────────────────────────────────
-const TRINITY_API = 'https://ambersol.co.il/api/beautymania/contact';
+const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
+const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
+const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order';
 
 // ─── NAV scroll ──────────────────────────────────────────────
 const nav = document.getElementById('nav');
@@ -34,8 +36,17 @@ window.addEventListener('scroll', () => {
 const revealObs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); revealObs.unobserve(e.target); } });
 }, { threshold: 0.1 });
-document.querySelectorAll('.about__grid, .blog-card, .product-card, .collab-card, .contact__info, .contact__form, .stat')
-  .forEach((el, i) => { el.classList.add('reveal'); el.style.transitionDelay = (i * 0.055) + 's'; revealObs.observe(el); });
+
+function initReveal() {
+  document.querySelectorAll('.about__grid, .blog-card, .product-card, .collab-card, .contact__info, .contact__form, .stat')
+    .forEach((el, i) => {
+      if (el.classList.contains('reveal')) return;
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.055) + 's';
+      revealObs.observe(el);
+    });
+}
+initReveal();
 
 // ─── Hero video — alternate between two clips ─────────────────
 (function () {
@@ -75,98 +86,204 @@ document.querySelectorAll('.about__grid, .blog-card, .product-card, .collab-card
 (function () {
   const strip = document.getElementById('galleryStrip');
   if (!strip) return;
-
   const origItems = Array.from(strip.querySelectorAll('.gallery__item'));
   const origSrcs  = origItems.map(it => it.querySelector('img').src);
   const ITEM_W    = 280 + 3;
-
   const clonesBefore = origItems.map(it => it.cloneNode(true));
   const clonesAfter  = origItems.map(it => it.cloneNode(true));
-
   clonesBefore.forEach(c => { c.dataset.clone = '1'; strip.insertBefore(c, strip.firstChild); });
   clonesAfter.forEach(c  => { c.dataset.clone = '1'; strip.appendChild(c); });
-
   const totalItems = origItems.length;
   const totalWidth = totalItems * ITEM_W;
-
   let offset = totalWidth;
   strip.style.transform = `translateX(${-offset}px)`;
   strip.style.transition = 'none';
-
   function wrapIfNeeded() {
     if (offset >= totalWidth * 2) { offset -= totalWidth; strip.style.transition = 'none'; strip.style.transform = `translateX(${-offset}px)`; }
     if (offset <= 0)              { offset += totalWidth; strip.style.transition = 'none'; strip.style.transform = `translateX(${-offset}px)`; }
   }
-
   let isDragging = false, startX = 0, startOffset = 0, movedPx = 0;
-
-  strip.addEventListener('mousedown', e => {
-    isDragging = true; strip.classList.add('dragging');
-    startX = e.clientX; startOffset = offset; movedPx = 0;
-    strip.style.transition = 'none';
-  });
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    const dx = startX - e.clientX;
-    movedPx = Math.abs(dx);
-    offset = startOffset + dx;
-    strip.style.transform = `translateX(${-offset}px)`;
-  });
-  window.addEventListener('mouseup', () => {
-    if (!isDragging) return;
-    isDragging = false; strip.classList.remove('dragging');
-    wrapIfNeeded();
-  });
-
+  strip.addEventListener('mousedown', e => { isDragging = true; strip.classList.add('dragging'); startX = e.clientX; startOffset = offset; movedPx = 0; strip.style.transition = 'none'; });
+  window.addEventListener('mousemove', e => { if (!isDragging) return; const dx = startX - e.clientX; movedPx = Math.abs(dx); offset = startOffset + dx; strip.style.transform = `translateX(${-offset}px)`; });
+  window.addEventListener('mouseup', () => { if (!isDragging) return; isDragging = false; strip.classList.remove('dragging'); wrapIfNeeded(); });
   let touchStartX = 0, touchOffset = 0;
-  strip.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX; touchOffset = offset;
-    strip.style.transition = 'none';
-  }, { passive: true });
-  strip.addEventListener('touchmove', e => {
-    const dx = touchStartX - e.touches[0].clientX;
-    offset = touchOffset + dx;
-    strip.style.transform = `translateX(${-offset}px)`;
-  }, { passive: true });
+  strip.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchOffset = offset; strip.style.transition = 'none'; }, { passive: true });
+  strip.addEventListener('touchmove', e => { const dx = touchStartX - e.touches[0].clientX; offset = touchOffset + dx; strip.style.transform = `translateX(${-offset}px)`; }, { passive: true });
   strip.addEventListener('touchend', () => wrapIfNeeded(), { passive: true });
-
   const lb = document.createElement('div');
   lb.className = 'lightbox';
-  lb.innerHTML = `
-    <button class="lightbox__close">✕</button>
-    <button class="lightbox__prev">‹</button>
-    <button class="lightbox__next">›</button>
-    <div class="lightbox__img-wrap"><img class="lightbox__img" src="" alt="" /></div>
-    <p class="lightbox__count"></p>`;
+  lb.innerHTML = `<button class="lightbox__close">✕</button><button class="lightbox__prev">‹</button><button class="lightbox__next">›</button><div class="lightbox__img-wrap"><img class="lightbox__img" src="" alt="" /></div><p class="lightbox__count"></p>`;
   document.body.appendChild(lb);
-
   let lbCurrent = 0;
-  function lbOpen(i) {
-    lbCurrent = ((i % totalItems) + totalItems) % totalItems;
-    lb.querySelector('.lightbox__img').src = origSrcs[lbCurrent];
-    lb.querySelector('.lightbox__count').textContent = (lbCurrent + 1) + ' / ' + totalItems;
-    lb.classList.add('active'); document.body.style.overflow = 'hidden';
-  }
+  function lbOpen(i) { lbCurrent = ((i % totalItems) + totalItems) % totalItems; lb.querySelector('.lightbox__img').src = origSrcs[lbCurrent]; lb.querySelector('.lightbox__count').textContent = (lbCurrent + 1) + ' / ' + totalItems; lb.classList.add('active'); document.body.style.overflow = 'hidden'; }
   function lbClose() { lb.classList.remove('active'); document.body.style.overflow = ''; }
-
   lb.querySelector('.lightbox__close').addEventListener('click', lbClose);
   lb.querySelector('.lightbox__prev').addEventListener('click', () => lbOpen(lbCurrent - 1));
   lb.querySelector('.lightbox__next').addEventListener('click', () => lbOpen(lbCurrent + 1));
   lb.addEventListener('click', e => { if (e.target === lb) lbClose(); });
-  document.addEventListener('keydown', e => {
-    if (!lb.classList.contains('active')) return;
-    if (e.key === 'Escape') lbClose();
-    if (e.key === 'ArrowLeft')  lbOpen(lbCurrent - 1);
-    if (e.key === 'ArrowRight') lbOpen(lbCurrent + 1);
+  document.addEventListener('keydown', e => { if (!lb.classList.contains('active')) return; if (e.key === 'Escape') lbClose(); if (e.key === 'ArrowLeft') lbOpen(lbCurrent - 1); if (e.key === 'ArrowRight') lbOpen(lbCurrent + 1); });
+  strip.addEventListener('click', e => { if (movedPx > 5) return; const item = e.target.closest('.gallery__item'); if (!item || item.dataset.clone) return; const idx = origItems.indexOf(item); if (idx !== -1) lbOpen(idx); });
+})();
+
+// ─── SHOP — Live products from Trinity ───────────────────────
+(function () {
+  const grid = document.getElementById('shopGrid');
+  if (!grid) return;
+
+  async function loadProducts() {
+    grid.innerHTML = '<div class="shop__loading">Загрузка...</div>';
+    try {
+      const res = await fetch(PRODUCTS_API);
+      if (!res.ok) throw new Error('API error');
+      const { products } = await res.json();
+
+      if (!products || products.length === 0) {
+        grid.innerHTML = '<p class="shop__empty">Товары скоро появятся...</p>';
+        return;
+      }
+
+      grid.innerHTML = products.map(p => `
+        <div class="product-card" data-id="${p.id}" data-name="${escStr(p.name)}" data-price="${p.sell_price || 0}">
+          <div class="product-card__img">
+            ${p.image_url
+              ? `<img src="${escStr(p.image_url)}" alt="${escStr(p.name)}" loading="lazy" />`
+              : `<div class="product-card__placeholder">✦</div>`
+            }
+            <div class="product-card__overlay">
+              <button class="btn btn--gold btn--sm js-order-btn"
+                data-id="${p.id}"
+                data-name="${escStr(p.name)}"
+                data-price="${p.sell_price || 0}">Заказать</button>
+            </div>
+          </div>
+          <div class="product-card__info">
+            <h4>${escStr(p.name)}</h4>
+            ${p.description ? `<p class="product-card__sub">${escStr(p.description.slice(0, 60))}${p.description.length > 60 ? '...' : ''}</p>` : ''}
+            ${p.sell_price ? `<p class="product-card__price">₪${Number(p.sell_price).toFixed(0)}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      // Reveal animation для новых карточек
+      initReveal();
+
+      // Обработчик кнопок "Заказать"
+      grid.querySelectorAll('.js-order-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openOrderModal(btn.dataset.id, btn.dataset.name, btn.dataset.price);
+        });
+      });
+
+    } catch (err) {
+      console.error('[Shop] Failed to load products:', err);
+      grid.innerHTML = '<p class="shop__empty">Не удалось загрузить товары. Попробуйте позже.</p>';
+    }
+  }
+
+  loadProducts();
+})();
+
+// ─── ORDER MODAL ─────────────────────────────────────────────
+(function () {
+  // Создаём модал один раз
+  const modal = document.createElement('div');
+  modal.className = 'order-modal';
+  modal.id = 'orderModal';
+  modal.innerHTML = `
+    <div class="order-modal__backdrop"></div>
+    <div class="order-modal__box">
+      <button class="order-modal__close">✕</button>
+      <p class="section__label">Оформить заказ</p>
+      <h3 class="order-modal__title" id="orderProductName"></h3>
+      <p class="order-modal__price" id="orderProductPrice"></p>
+      <form class="order-modal__form" id="orderForm">
+        <div class="form-group"><input type="text"   id="orderName"    placeholder="Ваше имя" required /></div>
+        <div class="form-group"><input type="email"  id="orderEmail"   placeholder="Email" required /></div>
+        <div class="form-group"><input type="tel"    id="orderPhone"   placeholder="Телефон (необязательно)" /></div>
+        <div class="form-group">
+          <div class="order-modal__qty">
+            <button type="button" class="qty-btn" id="qtyMinus">−</button>
+            <span id="qtyValue">1</span>
+            <button type="button" class="qty-btn" id="qtyPlus">+</button>
+          </div>
+        </div>
+        <div class="form-group"><textarea id="orderMessage" placeholder="Комментарий к заказу..." rows="3"></textarea></div>
+        <button type="submit" class="btn btn--gold btn--full" id="orderSubmitBtn">Отправить заказ</button>
+        <p class="form__success" id="orderSuccess">✓ Заказ отправлен! Анета свяжется с вами.</p>
+        <p class="form__error"   id="orderError">Ошибка. Попробуйте ещё раз.</p>
+      </form>
+    </div>`;
+  document.body.appendChild(modal);
+
+  let currentProductId = null;
+  let currentProductName = '';
+  let qty = 1;
+
+  function openOrderModal(id, name, price) {
+    currentProductId   = id;
+    currentProductName = name;
+    qty = 1;
+    document.getElementById('orderProductName').textContent  = name;
+    document.getElementById('orderProductPrice').textContent = price > 0 ? `₪${Number(price).toFixed(0)}` : '';
+    document.getElementById('qtyValue').textContent = '1';
+    document.getElementById('orderSuccess').classList.remove('visible');
+    document.getElementById('orderError').classList.remove('visible');
+    document.getElementById('orderForm').reset();
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  window.openOrderModal = openOrderModal;
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  modal.querySelector('.order-modal__close').addEventListener('click', closeModal);
+  modal.querySelector('.order-modal__backdrop').addEventListener('click', closeModal);
+
+  document.getElementById('qtyMinus').addEventListener('click', () => {
+    if (qty > 1) { qty--; document.getElementById('qtyValue').textContent = qty; }
+  });
+  document.getElementById('qtyPlus').addEventListener('click', () => {
+    if (qty < 99) { qty++; document.getElementById('qtyValue').textContent = qty; }
   });
 
-  strip.addEventListener('mousedown', e => { movedPx = 0; });
-  strip.addEventListener('click', e => {
-    if (movedPx > 5) return;
-    const item = e.target.closest('.gallery__item');
-    if (!item || item.dataset.clone) return;
-    const idx = origItems.indexOf(item);
-    if (idx !== -1) lbOpen(idx);
+  document.getElementById('orderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('orderSubmitBtn');
+    const success = document.getElementById('orderSuccess');
+    const error   = document.getElementById('orderError');
+    success.classList.remove('visible');
+    error.classList.remove('visible');
+    btn.textContent = 'Отправляю...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(ORDER_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id:   currentProductId,
+          product_name: currentProductName,
+          quantity:     qty,
+          name:    document.getElementById('orderName').value.trim(),
+          email:   document.getElementById('orderEmail').value.trim(),
+          phone:   document.getElementById('orderPhone').value.trim(),
+          message: document.getElementById('orderMessage').value.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      success.classList.add('visible');
+      document.getElementById('orderForm').reset();
+      setTimeout(() => closeModal(), 3000);
+    } catch {
+      error.classList.add('visible');
+    } finally {
+      btn.textContent = 'Отправить заказ';
+      btn.disabled = false;
+    }
   });
 })();
 
@@ -177,33 +294,28 @@ document.querySelectorAll('.about__grid, .blog-card, .product-card, .collab-card
   const success = document.getElementById('formSuccess');
   const error   = document.getElementById('formError');
   if (!form) return;
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     success.classList.remove('visible');
     error.classList.remove('visible');
-
-    const name    = document.getElementById('formName').value.trim();
-    const email   = document.getElementById('formEmail').value.trim();
-    const subject = document.getElementById('formSubject').value;
-    const message = document.getElementById('formMessage').value.trim();
-
     btn.textContent = 'Отправляю...';
     btn.disabled = true;
-
     try {
       const res = await fetch(TRINITY_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message })
+        body: JSON.stringify({
+          name:    document.getElementById('formName').value.trim(),
+          email:   document.getElementById('formEmail').value.trim(),
+          subject: document.getElementById('formSubject').value,
+          message: document.getElementById('formMessage').value.trim(),
+        }),
       });
-
       if (!res.ok) throw new Error('Server error');
-
       success.classList.add('visible');
       form.reset();
       setTimeout(() => success.classList.remove('visible'), 6000);
-    } catch (err) {
+    } catch {
       error.classList.add('visible');
       setTimeout(() => error.classList.remove('visible'), 5000);
     } finally {
@@ -212,3 +324,9 @@ document.querySelectorAll('.about__grid, .blog-card, .product-card, .collab-card
     }
   });
 })();
+
+// ─── Helpers ─────────────────────────────────────────────────
+function escStr(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
