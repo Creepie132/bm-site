@@ -16,20 +16,21 @@
 <!-- NAV -->
 <nav class="nav scrolled" id="nav">
   <div class="nav__inner">
-    <a href="../" class="nav__logo">
+    <a href="/" class="nav__logo">
       <img src="../media/logo/Logo_Bm_Trans.png" alt="Beautymania" />
     </a>
     <ul class="nav__links">
-      <li><a href="../#about">Обо мне</a></li>
-      <li><a href="../#blog">Блог</a></li>
-      <li><a href="../#shop" class="active">Магазин</a></li>
-      <li><a href="../#collab">Реклама</a></li>
-      <li><a href="../#contact" class="nav__cta">Контакты</a></li>
+      <li><a href="/#about">Обо мне</a></li>
+      <li><a href="/#blog">Блог</a></li>
+      <li><a href="/shop" class="active">Магазин</a></li>
+      <li><a href="/#collab">Реклама</a></li>
+      <li><a href="/#contact" class="nav__cta">Контакты</a></li>
     </ul>
     <div class="nav__right">
       <button class="cart-btn" id="cartBtn" aria-label="Корзина">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
           <path d="M16 10a4 4 0 01-8 0"/>
         </svg>
         <span class="cart-badge" id="cartBadge">0</span>
@@ -41,16 +42,16 @@
   </div>
   <div class="nav__mobile" id="mobileMenu">
     <ul>
-      <li><a href="../#about">Обо мне</a></li>
-      <li><a href="../#blog">Блог</a></li>
-      <li><a href="../#shop">Магазин</a></li>
-      <li><a href="../#collab">Реклама</a></li>
-      <li><a href="../#contact">Контакты</a></li>
+      <li><a href="/#about">Обо мне</a></li>
+      <li><a href="/#blog">Блог</a></li>
+      <li><a href="/shop">Магазин</a></li>
+      <li><a href="/#collab">Реклама</a></li>
+      <li><a href="/#contact">Контакты</a></li>
     </ul>
   </div>
 </nav>
 
-<!-- PAGE HEADER -->
+<!-- HEADER -->
 <header class="shop-header">
   <div class="container">
     <p class="section__label">Бьюти-эссенциалы</p>
@@ -59,11 +60,9 @@
   </div>
 </header>
 
-<!-- SHOP CONTENT -->
+<!-- SHOP -->
 <main class="shop-main">
   <div class="container">
-
-    <!-- Filters + Sort -->
     <div class="shop-toolbar">
       <div class="shop-filters" id="shopFilters">
         <button class="filter-chip active" data-cat="all">Все</button>
@@ -71,25 +70,22 @@
       <div class="shop-sort">
         <select id="sortSelect">
           <option value="default">По умолчанию</option>
-          <option value="price_asc">Цена: по возрастанию</option>
-          <option value="price_desc">Цена: по убыванию</option>
+          <option value="price_asc">Цена: возрастание</option>
+          <option value="price_desc">Цена: убывание</option>
           <option value="name_asc">По названию</option>
         </select>
       </div>
     </div>
-
-    <!-- Products grid -->
     <div class="shop-grid" id="shopGrid">
       <div class="shop-loading">
         <div class="shop-loading__spinner"></div>
-        <p>Загружаем товары...</p>
+        <span>Загружаем товары</span>
       </div>
     </div>
-
   </div>
 </main>
 
-<!-- CART SIDEBAR -->
+<!-- CART OVERLAY + SIDEBAR -->
 <div class="cart-overlay" id="cartOverlay"></div>
 <aside class="cart-sidebar" id="cartSidebar">
   <div class="cart-sidebar__head">
@@ -98,13 +94,14 @@
   </div>
   <div class="cart-sidebar__body" id="cartBody">
     <div class="cart-empty" id="cartEmpty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48" style="opacity:.2">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="40" height="40">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
         <path d="M16 10a4 4 0 01-8 0"/>
       </svg>
-      <p>Корзина пуста</p>
+      <span>Корзина пуста</span>
     </div>
-    <div class="cart-items" id="cartItems"></div>
+    <div id="cartItems"></div>
   </div>
   <div class="cart-sidebar__foot">
     <div class="cart-total">
@@ -119,8 +116,10 @@
 <div class="checkout-modal" id="checkoutModal">
   <div class="checkout-modal__backdrop" id="checkoutBackdrop"></div>
   <div class="checkout-modal__box">
-    <button class="checkout-modal__close" id="checkoutClose">✕</button>
-    <p class="section__label">Оформление заказа</p>
+    <div class="checkout-modal__head">
+      <p class="section__label" style="margin-bottom:.3rem">Оформление заказа</p>
+      <button class="checkout-modal__close" id="checkoutClose">✕</button>
+    </div>
     <div class="checkout-summary" id="checkoutSummary"></div>
     <form class="checkout-form" id="checkoutForm">
       <div class="form-group"><input type="text"  id="coName"    placeholder="Ваше имя" required /></div>
@@ -129,13 +128,13 @@
       <div class="form-group"><textarea id="coMessage" placeholder="Адрес доставки / комментарий..." rows="3"></textarea></div>
       <button type="submit" class="btn btn--gold btn--full" id="coSubmitBtn">Подтвердить заказ</button>
       <p class="form__success" id="coSuccess">✓ Заказ принят! Анета свяжется с вами в ближайшее время.</p>
-      <p class="form__error" id="coError">Ошибка. Попробуйте ещё раз.</p>
+      <p class="form__error"   id="coError">Ошибка отправки. Попробуйте ещё раз.</p>
     </form>
   </div>
 </div>
 
 <!-- FOOTER -->
-<footer class="footer" style="margin-top:0">
+<footer class="footer">
   <div class="container footer__inner">
     <img src="../media/logo/Logo_Bm_Trans.png" alt="Beautymania" class="footer__logo" />
     <p class="footer__copy">© 2026 Beautymania by Aneta. Все права защищены.</p>

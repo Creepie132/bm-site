@@ -1,4 +1,4 @@
 @echo off
 git add .
-git commit -m "feat: 4 random products preview + shop CTA button on homepage"
+git commit -m "fix: shop page full redesign - elegant dark gold style"
 git push origin main
