@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beautymania — Красота и Мода с Анетой</title>
+  <meta name="description" content="Красота, мода и косметика. Блог, магазин и рекламные коллаборации." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">
+      <img src="media/logo/Logo_Bm_Trans.png" alt="Beautymania" />
+    </a>
+    <ul class="nav__links">
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#blog">Блог</a></li>
+      <li><a href="#shop">Магазин</a></li>
+      <li><a href="#collab">Реклама</a></li>
+      <li><a href="#contact" class="nav__cta">Контакты</a></li>
+    </ul>
+    <button class="nav__burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav__mobile" id="mobileMenu">
+    <ul>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#blog">Блог</a></li>
+      <li><a href="#shop">Магазин</a></li>
+      <li><a href="#collab">Реклама</a></li>
+      <li><a href="#contact">Контакты</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <video class="hero__video" id="heroVideo" autoplay muted playsinline>
+    <source src="media/vid/landvid.MP4" type="video/mp4" />
+  </video>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <p class="hero__label">Красота &amp; Мода</p>
+    <h1 class="hero__title">Beautymania</h1>
+    <p class="hero__sub">Стиль — это не то, что ты носишь. Это то, как ты живёшь</p>
+    <a href="#shop" class="btn btn--gold">В магазин</a>
+  </div>
+  <div class="hero__scroll"><span></span><p>Листать</p></div>
+</section>
+
+<!-- ABOUT -->
+<section class="about section" id="about">
+  <div class="about__grid container">
+    <div class="about__images">
+      <div class="tilt-card" id="tiltCard">
+        <div class="tilt-card__inner">
+          <img src="media/img/about2.jpg" alt="Анета" />
+          <div class="tilt-card__shine"></div>
+          <div class="tilt-card__border"></div>
+        </div>
+      </div>
+    </div>
+    <div class="about__text">
+      <p class="section__label">Знакомьтесь</p>
+      <h2 class="section__title">Привет, я — <em>Анета</em></h2>
+      <p>Бьюти-эксперт, любительница моды и контент-мейкер из Израиля. Делюсь страстью к косметике, уходу за кожей и стилю с тысячами подписчиков, которые доверяют моим честным обзорам и смелой эстетике.</p>
+      <div class="about__stats">
+        <div class="stat"><span class="stat__num">20к+</span><span class="stat__label">Instagram</span></div>
+        <div class="stat"><span class="stat__num">12к+</span><span class="stat__label">Facebook</span></div>
+        <div class="stat"><span class="stat__num">100%</span><span class="stat__label">Честно</span></div>
+      </div>
+      <a href="#contact" class="btn btn--outline">Сотрудничество</a>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="blog section" id="blog">
+  <div class="container">
+    <p class="section__label">Последние записи</p>
+    <h2 class="section__title">Из блога</h2>
+    <div class="blog__grid">
+      <article class="blog-card blog-card--featured">
+        <div class="blog-card__img">
+          <img src="media/img/IMG-20260226-WA0006.jpg" alt="Пост" />
+          <span class="blog-card__tag">Уход за кожей</span>
+        </div>
+        <div class="blog-card__body">
+          <p class="blog-card__date">Февраль 2026</p>
+          <h3>Мой утренний ритуал сияния — 5 шагов, которым я не изменяю</h3>
+          <p>Просыпаться с сияющей кожей — это не магия, а ритуал. Вот 5 продуктов, которые изменили мои утра...</p>
+          <a href="#" class="link-arrow">Читать далее →</a>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card__img">
+          <img src="media/img/IMG-20260226-WA0007.jpg" alt="Пост" />
+          <span class="blog-card__tag">Мода</span>
+        </div>
+        <div class="blog-card__body">
+          <p class="blog-card__date">Январь 2026</p>
+          <h3>Чёрный — это всегда новый чёрный</h3>
+          <a href="#" class="link-arrow">Читать далее →</a>
+        </div>
+      </article>
+      <article class="blog-card">
+        <div class="blog-card__img">
+          <img src="media/img/IMG-20260226-WA0009.jpg" alt="Пост" />
+          <span class="blog-card__tag">Макияж</span>
+        </div>
+        <div class="blog-card__body">
+          <p class="blog-card__date">Декабрь 2025</p>
+          <h3>Праздничный гламур: золото и эффектные образы</h3>
+          <a href="#" class="link-arrow">Читать далее →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SHOP -->
+<section class="shop section" id="shop">
+  <div class="container">
+    <p class="section__label">Бьюти-эссенциалы</p>
+    <h2 class="section__title">Магазин</h2>
+    <div class="shop__grid">
+      <div class="product-card">
+        <div class="product-card__img">
+          <img src="media/img/IMG-20260226-WA0012.jpg" alt="Продукт" />
+          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
+        </div>
+        <div class="product-card__info">
+          <h4>Люкс-сыворотка для лица</h4>
+          <p class="product-card__sub">Увлажнение &amp; Сияние</p>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__img">
+          <img src="media/img/IMG-20260226-WA0013.jpg" alt="Продукт" />
+          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
+        </div>
+        <div class="product-card__info">
+          <h4>Бархатная коллекция помад</h4>
+          <p class="product-card__sub">12 фирменных оттенков</p>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__img">
+          <img src="media/img/IMG-20260226-WA0014.jpg" alt="Продукт" />
+          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
+        </div>
+        <div class="product-card__info">
+          <h4>Палетка для глаз Noir</h4>
+          <p class="product-card__sub">Смоки &amp; Чёткость</p>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-card__img">
+          <img src="media/img/IMG-20260226-WA0015.jpg" alt="Продукт" />
+          <div class="product-card__overlay"><a href="#contact" class="btn btn--gold btn--sm">Заказать</a></div>
+        </div>
+        <div class="product-card__info">
+          <h4>Масло для тела с сиянием</h4>
+          <p class="product-card__sub">Сияние на 24 часа</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY — infinite loop -->
+<section class="gallery section">
+  <div class="container">
+    <p class="section__label">Визуал</p>
+    <h2 class="section__title">Галерея</h2>
+  </div>
+  <div class="gallery__track-wrapper">
+    <div class="gallery__strip" id="galleryStrip">
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0002.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0004.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0005.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0008.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0010.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0011.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0016.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0017.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0018.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0019.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0021.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0022.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0023.jpg" alt="" /></div>
+      <div class="gallery__item"><img src="media/img/IMG-20260226-WA0026.jpg" alt="" /></div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLAB -->
+<section class="collab section" id="collab">
+  <div class="collab__bg"></div>
+  <div class="container collab__inner">
+    <p class="section__label section__label--light">Реклама &amp; Партнёрство</p>
+    <h2 class="section__title section__title--light">Создадим что-то <em>вместе</em></h2>
+    <p class="collab__desc">Я сотрудничаю с бьюти-брендами, модными марками и лайфстайл-компаниями — создаю аутентичный спонсорский контент, обзоры продуктов и рекламные истории, которые находят отклик у моей аудитории.</p>
+    <div class="collab__cards">
+      <div class="collab-card">
+        <div class="collab-card__icon">✦</div>
+        <h4>Спонсорские посты</h4>
+        <p>Размещения в Instagram и Facebook с искренним сторителлингом</p>
+      </div>
+      <div class="collab-card">
+        <div class="collab-card__icon">✦</div>
+        <h4>Обзоры продуктов</h4>
+        <p>Честные, детальные отзывы, которым доверяет моя аудитория</p>
+      </div>
+      <div class="collab-card">
+        <div class="collab-card__icon">✦</div>
+        <h4>Бренд-кампании</h4>
+        <p>Полное творческое руководство, фотография и видеоконтент</p>
+      </div>
+    </div>
+    <a href="#contact" class="btn btn--gold">Написать мне</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact section" id="contact">
+  <div class="container contact__inner">
+    <p class="section__label">Давайте пообщаемся</p>
+    <h2 class="section__title">Написать <em>Анете</em></h2>
+    <div class="contact__grid">
+      <div class="contact__info">
+        <p>По заказам из магазина, рекламным запросам или просто поздороваться — буду рада вашему сообщению.</p>
+        <div class="contact__links">
+          <a href="https://instagram.com" target="_blank" class="contact__social">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            @beautymania
+          </a>
+          <a href="https://facebook.com" target="_blank" class="contact__social">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            Beautymania
+          </a>
+        </div>
+      </div>
+      <form class="contact__form" id="contactForm">
+        <div class="form-group"><input type="text" id="formName" placeholder="Ваше имя" required /></div>
+        <div class="form-group"><input type="email" id="formEmail" placeholder="Электронная почта" required /></div>
+        <div class="form-group">
+          <select id="formSubject">
+            <option value="">Тема обращения...</option>
+            <option>Заказ из магазина</option>
+            <option>Реклама / Коллаборация</option>
+            <option>Общий вопрос</option>
+          </select>
+        </div>
+        <div class="form-group"><textarea id="formMessage" placeholder="Ваше сообщение..." rows="4" required></textarea></div>
+        <button type="submit" class="btn btn--gold btn--full" id="formBtn">Отправить сообщение</button>
+        <p class="form__success" id="formSuccess">✓ Сообщение отправлено! Скоро свяжусь с вами.</p>
+        <p class="form__error" id="formError">Ошибка отправки. Попробуйте ещё раз.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <img src="media/logo/Logo_Bm_Trans.png" alt="Beautymania" class="footer__logo" />
+    <p class="footer__copy">© 2026 Beautymania by Aneta. Все права защищены.</p>
+    <p class="footer__credit">Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a></p>
+  </div>
+</footer>
+<script src="js/main.js"></script>
+</body>
+</html>
