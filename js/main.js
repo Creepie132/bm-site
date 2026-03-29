@@ -1,7 +1,6 @@
 // ─── Config ──────────────────────────────────────────────────
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
-const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order';
 
 // ─── NAV scroll ──────────────────────────────────────────────
 const nav = document.getElementById('nav');
@@ -125,7 +124,7 @@ initReveal();
   strip.addEventListener('click', e => { if (movedPx > 5) return; const item = e.target.closest('.gallery__item'); if (!item || item.dataset.clone) return; const idx = origItems.indexOf(item); if (idx !== -1) lbOpen(idx); });
 })();
 
-// ─── SHOP — Live products from Trinity ───────────────────────
+// ─── SHOP — 4 рандомных товара + кнопка в магазин ────────────
 (function () {
   const grid = document.getElementById('shopGrid');
   if (!grid) return;
@@ -142,18 +141,17 @@ initReveal();
         return;
       }
 
-      grid.innerHTML = products.map(p => `
-        <div class="product-card" data-id="${p.id}" data-name="${escStr(p.name)}" data-price="${p.sell_price || 0}">
+      // 4 рандомных товара
+      const four = [...products].sort(() => Math.random() - 0.5).slice(0, 4);
+
+      grid.innerHTML = four.map(p => `
+        <div class="product-card">
           <div class="product-card__img">
             ${p.image_url
               ? `<img src="${escStr(p.image_url)}" alt="${escStr(p.name)}" loading="lazy" />`
-              : `<div class="product-card__placeholder">✦</div>`
-            }
+              : `<div class="product-card__placeholder">✦</div>`}
             <div class="product-card__overlay">
-              <button class="btn btn--gold btn--sm js-order-btn"
-                data-id="${p.id}"
-                data-name="${escStr(p.name)}"
-                data-price="${p.sell_price || 0}">Заказать</button>
+              <a href="/shop" class="btn btn--gold btn--sm">Смотреть</a>
             </div>
           </div>
           <div class="product-card__info">
@@ -164,127 +162,14 @@ initReveal();
         </div>
       `).join('');
 
-      // Reveal animation для новых карточек
       initReveal();
-
-      // Обработчик кнопок "Заказать"
-      grid.querySelectorAll('.js-order-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openOrderModal(btn.dataset.id, btn.dataset.name, btn.dataset.price);
-        });
-      });
-
     } catch (err) {
       console.error('[Shop] Failed to load products:', err);
-      grid.innerHTML = '<p class="shop__empty">Не удалось загрузить товары. Попробуйте позже.</p>';
+      grid.innerHTML = '<p class="shop__empty">Не удалось загрузить товары.</p>';
     }
   }
 
   loadProducts();
-})();
-
-// ─── ORDER MODAL ─────────────────────────────────────────────
-(function () {
-  // Создаём модал один раз
-  const modal = document.createElement('div');
-  modal.className = 'order-modal';
-  modal.id = 'orderModal';
-  modal.innerHTML = `
-    <div class="order-modal__backdrop"></div>
-    <div class="order-modal__box">
-      <button class="order-modal__close">✕</button>
-      <p class="section__label">Оформить заказ</p>
-      <h3 class="order-modal__title" id="orderProductName"></h3>
-      <p class="order-modal__price" id="orderProductPrice"></p>
-      <form class="order-modal__form" id="orderForm">
-        <div class="form-group"><input type="text"   id="orderName"    placeholder="Ваше имя" required /></div>
-        <div class="form-group"><input type="email"  id="orderEmail"   placeholder="Email" required /></div>
-        <div class="form-group"><input type="tel"    id="orderPhone"   placeholder="Телефон (необязательно)" /></div>
-        <div class="form-group">
-          <div class="order-modal__qty">
-            <button type="button" class="qty-btn" id="qtyMinus">−</button>
-            <span id="qtyValue">1</span>
-            <button type="button" class="qty-btn" id="qtyPlus">+</button>
-          </div>
-        </div>
-        <div class="form-group"><textarea id="orderMessage" placeholder="Комментарий к заказу..." rows="3"></textarea></div>
-        <button type="submit" class="btn btn--gold btn--full" id="orderSubmitBtn">Отправить заказ</button>
-        <p class="form__success" id="orderSuccess">✓ Заказ отправлен! Анета свяжется с вами.</p>
-        <p class="form__error"   id="orderError">Ошибка. Попробуйте ещё раз.</p>
-      </form>
-    </div>`;
-  document.body.appendChild(modal);
-
-  let currentProductId = null;
-  let currentProductName = '';
-  let qty = 1;
-
-  function openOrderModal(id, name, price) {
-    currentProductId   = id;
-    currentProductName = name;
-    qty = 1;
-    document.getElementById('orderProductName').textContent  = name;
-    document.getElementById('orderProductPrice').textContent = price > 0 ? `₪${Number(price).toFixed(0)}` : '';
-    document.getElementById('qtyValue').textContent = '1';
-    document.getElementById('orderSuccess').classList.remove('visible');
-    document.getElementById('orderError').classList.remove('visible');
-    document.getElementById('orderForm').reset();
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  window.openOrderModal = openOrderModal;
-
-  function closeModal() {
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  modal.querySelector('.order-modal__close').addEventListener('click', closeModal);
-  modal.querySelector('.order-modal__backdrop').addEventListener('click', closeModal);
-
-  document.getElementById('qtyMinus').addEventListener('click', () => {
-    if (qty > 1) { qty--; document.getElementById('qtyValue').textContent = qty; }
-  });
-  document.getElementById('qtyPlus').addEventListener('click', () => {
-    if (qty < 99) { qty++; document.getElementById('qtyValue').textContent = qty; }
-  });
-
-  document.getElementById('orderForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('orderSubmitBtn');
-    const success = document.getElementById('orderSuccess');
-    const error   = document.getElementById('orderError');
-    success.classList.remove('visible');
-    error.classList.remove('visible');
-    btn.textContent = 'Отправляю...';
-    btn.disabled = true;
-
-    try {
-      const res = await fetch(ORDER_API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id:   currentProductId,
-          product_name: currentProductName,
-          quantity:     qty,
-          name:    document.getElementById('orderName').value.trim(),
-          email:   document.getElementById('orderEmail').value.trim(),
-          phone:   document.getElementById('orderPhone').value.trim(),
-          message: document.getElementById('orderMessage').value.trim(),
-        }),
-      });
-      if (!res.ok) throw new Error('Server error');
-      success.classList.add('visible');
-      document.getElementById('orderForm').reset();
-      setTimeout(() => closeModal(), 3000);
-    } catch {
-      error.classList.add('visible');
-    } finally {
-      btn.textContent = 'Отправить заказ';
-      btn.disabled = false;
-    }
-  });
 })();
 
 // ─── Contact form → Trinity API ──────────────────────────────
