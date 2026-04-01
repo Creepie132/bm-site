@@ -1,6 +1,8 @@
 // ─── Config ──────────────────────────────────────────────────
-const PRODUCTS_API = 'https://ambersol.co.il/api/beautymania/products'
-const ORDER_API    = 'https://ambersol.co.il/api/beautymania/order'
+const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
+const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order'
+const SITE_URL      = 'https://beautymania.co.il'
+const SUPABASE_URL  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 
 // ─── State ───────────────────────────────────────────────────
 let allProducts = []
@@ -16,13 +18,19 @@ burger?.addEventListener('click', () => {
   burger.classList.toggle('open')
 })
 
+const RELATED_API = 'https://ambersol.co.il/api/beautymania/related'
+
 // ─── Cart open/close ─────────────────────────────────────────
 const cartBtn     = document.getElementById('cartBtn')
 const cartSidebar = document.getElementById('cartSidebar')
 const cartOverlay = document.getElementById('cartOverlay')
 const cartClose   = document.getElementById('cartClose')
 
-function openCart()  { cartSidebar.classList.add('open'); cartOverlay.classList.add('open') }
+function openCart()  {
+  cartSidebar.classList.add('open')
+  cartOverlay.classList.add('open')
+  renderCrossSell()
+}
 function closeCart() { cartSidebar.classList.remove('open'); cartOverlay.classList.remove('open') }
 
 cartBtn?.addEventListener('click', openCart)
@@ -100,6 +108,53 @@ function renderCart() {
     </div>
   `).join('')
   totalEl.textContent = '₪' + cartTotal().toFixed(0)
+}
+
+// ─── Cross-sell block in cart ─────────────────────────────────
+async function renderCrossSell() {
+  const container = document.getElementById('crossSellBlock')
+  if (!container) return
+
+  if (cart.length === 0) { container.innerHTML = ''; return }
+
+  const ids = cart.map(i => i.id).join(',')
+  try {
+    const res = await fetch(`${RELATED_API}?ids=${ids}`)
+    if (!res.ok) throw new Error()
+    const { products } = await res.json()
+    if (!products || products.length === 0) { container.innerHTML = ''; return }
+
+    container.innerHTML = `
+      <div class="cross-sell">
+        <p class="cross-sell__title">✦ С этим идеально сочетается</p>
+        <div class="cross-sell__list">
+          ${products.slice(0, 3).map(p => `
+            <div class="cross-sell__item">
+              <div class="cross-sell__img">
+                ${p.image_url
+                  ? `<img src="${esc(optimizeImg(p.image_url, 120))}" alt="${esc(p.name)}" loading="lazy" />`
+                  : '<div class="cross-sell__placeholder">✦</div>'}
+              </div>
+              <div class="cross-sell__info">
+                <p class="cross-sell__name">${esc(p.name)}</p>
+                ${p.sell_price ? `<p class="cross-sell__price">₪${Number(p.sell_price).toFixed(0)}</p>` : ''}
+              </div>
+              <button class="cross-sell__btn" data-id="${p.id}" onclick="addRelatedToCart('${p.id}')">+</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>`
+  } catch {
+    container.innerHTML = ''
+  }
+}
+
+window.addRelatedToCart = function(id) {
+  const product = allProducts.find(p => p.id === id)
+  if (product) {
+    addToCart(product, 1)
+    renderCrossSell()
+  }
 }
 
 // ─── Checkout ────────────────────────────────────────────────
@@ -189,6 +244,7 @@ async function loadProducts() {
     allProducts = products || []
     buildCategoryFilters()
     renderProducts()
+    injectProductSchema(allProducts)
   } catch {
     document.getElementById('shopGrid').innerHTML =
       '<p class="shop-empty">Не удалось загрузить товары. Попробуйте позже.</p>'
@@ -237,7 +293,7 @@ function renderProducts() {
     <div class="sp-card" data-id="${p.id}">
       <div class="sp-card__img">
         ${p.image_url
-          ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy" />`
+          ? `<img src="${esc(optimizeImg(p.image_url, 600))}" alt="${esc(p.name)}" loading="lazy" width="600" height="600" />`
           : `<div class="sp-card__placeholder">✦</div>`}
         ${p.category ? `<span class="sp-card__badge">${esc(p.category)}</span>` : ''}
       </div>
@@ -307,4 +363,64 @@ loadProducts()
 function esc(str) {
   if (!str) return ''
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')
+}
+
+// ─── Image optimization via Supabase Transform ───────────────
+// Конвертирует Supabase Storage URL в оптимизированный WebP
+// /storage/v1/object/public/... → /storage/v1/render/image/public/...?width=N&quality=80
+function optimizeImg(url, width = 600) {
+  if (!url) return url
+  try {
+    // Только обрабатываем Supabase Storage URLs
+    if (!url.includes('supabase.co/storage/v1/object/public')) return url
+    const path = url.split('/storage/v1/object/public')[1]
+    return `${SUPABASE_URL}${path}?width=${width}&quality=80&format=webp`
+  } catch {
+    return url
+  }
+}
+
+// ─── Product schema.org (JSON-LD) ────────────────────────────
+function injectProductSchema(products) {
+  const el = document.getElementById('products-schema')
+  if (!el || !products.length) return
+
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': 'Магазин Beautymania',
+    'url': `${SITE_URL}/shop`,
+    'numberOfItems': products.length,
+    'itemListElement': products.map((p, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'item': {
+        '@type': 'Product',
+        '@id': `${SITE_URL}/shop#product-${p.id}`,
+        'name': p.name,
+        'description': p.description || undefined,
+        'image': p.image_url ? optimizeImg(p.image_url, 800) : undefined,
+        'sku': p.id,
+        'brand': {
+          '@type': 'Brand',
+          'name': 'Beautymania'
+        },
+        'offers': {
+          '@type': 'Offer',
+          'url': `${SITE_URL}/shop#product-${p.id}`,
+          'priceCurrency': 'ILS',
+          'price': p.sell_price ? String(Number(p.sell_price).toFixed(2)) : '0',
+          'availability': p.quantity > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          'seller': {
+            '@type': 'Organization',
+            'name': 'Beautymania'
+          }
+        }
+      }
+    }))
+  }
+
+  el.textContent = JSON.stringify(itemListSchema)
 }

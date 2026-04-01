@@ -1,6 +1,16 @@
 // ─── Config ──────────────────────────────────────────────────
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
+const SITE_URL      = 'https://beautymania.co.il';
+const SUPABASE_IMG  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public';
+
+function optimizeImgMain(url, width) {
+  if (!url || !url.includes('supabase.co/storage/v1/object/public')) return url;
+  try {
+    const path = url.split('/storage/v1/object/public')[1];
+    return `${SUPABASE_IMG}${path}?width=${width}&quality=80&format=webp`;
+  } catch { return url; }
+}
 
 // ─── NAV scroll ──────────────────────────────────────────────
 const nav = document.getElementById('nav');
@@ -148,7 +158,7 @@ initReveal();
         <div class="product-card">
           <div class="product-card__img">
             ${p.image_url
-              ? `<img src="${escStr(p.image_url)}" alt="${escStr(p.name)}" loading="lazy" />`
+              ? `<img src="${escStr(optimizeImgMain(p.image_url, 400))}" alt="${escStr(p.name)}" loading="lazy" width="400" height="400" />`
               : `<div class="product-card__placeholder">✦</div>`}
             <div class="product-card__overlay">
               <a href="/shop" class="btn btn--gold btn--sm">Смотреть</a>
