@@ -38,9 +38,9 @@
 
 ### Trinity CRM (бэкенд)
 - **Supabase Project ID (Trinity):** tjryzcqvsavtllahjyrj
-- **Org ID Beautymania:** 1e77c781-3848-4b16-a623-693de123c6bc (в env Vercel Trinity)
-- **User ID Анеты:** 0be0d9ad-d88e-4e7f-aee2-d2b171e03c58 (в env Vercel Trinity)
-- **Email Анеты:** через env BEAUTYMANIA_EMAIL
+- **Org ID Beautymania:** через env `BEAUTYMANIA_ORG_ID` в Vercel Trinity
+- **User ID Анеты:** через env `BEAUTYMANIA_USER_ID` в Vercel Trinity
+- **Email Анеты:** через env `BEAUTYMANIA_EMAIL`
 
 ---
 
@@ -49,22 +49,22 @@
 ```
 bm_site/
 ├── index.html              # Главная страница
-├── shop-section.html       # Секция магазина (фрагмент, не страница)
+├── shop-section.html       # Секция магазина (фрагмент)
 ├── vercel.json             # Конфигурация Vercel + security headers
 ├── .gitignore              # do_commit.bat исключён из git
 ├── do_commit.bat           # Локальный скрипт деплоя (НЕ в git)
 ├── css/
 │   ├── style.css           # Основные стили сайта
-│   ├── shop.css            # Стили страницы магазина
+│   ├── shop.css            # Стили страницы магазина + cross-sell
 │   └── shop-modal.css      # Стили модального окна чекаута
 ├── js/
 │   └── main.js             # Основная логика: контакт-форма, загрузка товаров
 ├── shop/
-│   ├── index.html          # Страница магазина
+│   ├── index.html          # Страница магазина (+ Product schema.org JSON-LD)
 │   ├── shop.css            # Дополнительные стили магазина
-│   └── shop.js             # Логика: корзина, фильтры, сортировка, чекаут
+│   └── shop.js             # Логика: корзина, фильтры, schema.org, cross-sell
 └── media/
-    ├── img/                # Фото галереи (about.jpg, about2.jpg, IMG-*.jpg)
+    ├── img/                # Фото галереи
     ├── logo/               # Logo_Bm_Trans.png
     └── vid/                # landvid.MP4, landvid2.MP4 (hero видео)
 ```
@@ -89,7 +89,7 @@ bm_site/
 - About: 3D tilt-карточка с mouse parallax (max 14°)
 - Gallery: infinite loop drag-scroll с lightbox
 - Blog: карточки с reveal-анимацией при скролле
-- Shop preview: 4 рандомных товара с главной
+- Shop preview: 4 рандомных товара с главной (WebP через Supabase Transform)
 - Contact: форма → Trinity API
 
 ---
@@ -103,12 +103,13 @@ bm_site/
 | GET | `/api/beautymania/products` | Получить активные товары со склада |
 | POST | `/api/beautymania/contact` | Отправить контактную форму |
 | POST | `/api/beautymania/order` | Оформить заказ из корзины |
+| GET | `/api/beautymania/related?ids=uuid1,uuid2` | Cross-sell товары для корзины |
 
 ### GET /api/beautymania/products
 - Возвращает только активные товары (`is_active=true`, `quantity>0`) организации Beautymania
 - Поля: `id, name, description, sell_price, image_url, category, quantity, unit`
 - Кэш: `public, s-maxage=60, stale-while-revalidate=300`
-- Инвалидация кэша: через webhook `/api/webhooks/products-updated` при изменении товара в Trinity
+- Инвалидация: webhook `/api/webhooks/products-updated` при изменении товара в Trinity
 
 ### POST /api/beautymania/contact
 - Body: `{ name, email, subject?, message }`
@@ -127,112 +128,215 @@ bm_site/
 - Отправляет email Анете через Resend
 - Rate limit: `ratelimitPublic` по IP
 
+### GET /api/beautymania/related?ids=uuid1,uuid2
+- Принимает список UUID товаров из корзины (до 10)
+- Возвращает до 6 cross-sell товаров из таблицы `product_relations`
+- Исключает товары уже в корзине
+- Кэш: `public, s-maxage=60`
+
 ---
 
-## 7. Логика JS (js/main.js)
+## 7. Оптимизация изображений (Supabase Transform)
+
+Все изображения товаров автоматически конвертируются в WebP через Supabase Image Transformation.
+
+### Функция `optimizeImg(url, width)`
+```javascript
+const SUPABASE_URL = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
+
+function optimizeImg(url, width = 600) {
+  if (!url || !url.includes('supabase.co/storage/v1/object/public')) return url
+  const path = url.split('/storage/v1/object/public')[1]
+  return `${SUPABASE_URL}${path}?width=${width}&quality=80&format=webp`
+}
+```
+
+### Размеры по контексту
+| Контекст | Width | Формат |
+|----------|-------|--------|
+| Карточки магазина | 600px | WebP 80% |
+| Превью на главной | 400px | WebP 80% |
+| Cross-sell миниатюры | 120px | WebP 80% |
+| Product schema.org | 800px | WebP 80% |
+
+**Fallback:** если URL не является Supabase Storage URL — возвращается оригинал без изменений.
+
+---
+
+## 8. SEO
+
+### shop/index.html
+- `og:title`, `og:description`, `og:url`, `og:type`
+- `<link rel="canonical">`
+- `<meta name="robots" content="index, follow">`
+
+### Product schema.org (JSON-LD)
+После загрузки товаров функция `injectProductSchema(products)` генерирует структурированные данные:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "item": {
+      "@type": "Product",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "ILS",
+        "price": "...",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  }]
+}
+```
+
+- `availability` — динамически `InStock` / `OutOfStock` по реальному `quantity`
+- Вставляется в `<script id="products-schema" type="application/ld+json">` после загрузки
+- Даёт Google карточку товара в поиске с ценой и наличием
+
+---
+
+## 9. Cross-sell система
+
+### Архитектура
+- **БД:** таблица `product_relations` в Trinity Supabase
+- **API:** `GET /api/beautymania/related?ids=...`
+- **UI:** блок в корзине при открытии
+
+### Таблица product_relations
+```sql
+id uuid, org_id uuid, product_id uuid, related_id uuid,
+relation_type text CHECK IN ('cross_sell', 'upsell', 'bundle'),
+UNIQUE(org_id, product_id, related_id, relation_type)
+```
+RLS: члены орга читают, owner/admin управляют.
+
+### Управление связями (Trinity CRM)
+**Путь:** `/inventory` → клик на товар → секция "Сопутствующие товары"
+
+Компонент `ProductRelationsManager`:
+- Кнопка "Добавить" → dropdown-picker со всеми товарами орга
+- Поиск по имени и категории внутри picker
+- Выбранные товары отображаются как синие чипы
+- Кнопка "Сохранить изменения" появляется только при наличии несохранённых правок
+- Сохранение: DELETE старых + INSERT новых (транзакционно)
+- Оптимистичный UI — откат при ошибке
+
+### Блок в корзине (shop.js)
+- Открывается при каждом `openCart()`
+- `fetch('/api/beautymania/related?ids=...')` с ID товаров из корзины
+- Показывает до 3 товаров: миниатюра + имя + цена + кнопка `+`
+- Клик `+` → `addRelatedToCart(id)` → товар добавляется в корзину + перезагрузка блока
+- При пустом ответе — блок скрыт
+
+---
+
+## 10. Логика JS (js/main.js)
 
 ### Константы
 ```javascript
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact'
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
+const SITE_URL      = 'https://beautymania.co.il'
+const SUPABASE_IMG  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 ```
 
 ### Модули
-1. **Nav scroll** — класс `.scrolled` на `#nav` при прокрутке
-2. **Burger menu** — открытие/закрытие мобильного меню
-3. **Active nav link** — подсветка активной секции при скролле
-4. **Scroll reveal** — IntersectionObserver для `.reveal` элементов
-5. **Hero video** — чередование двух клипов при окончании
+1. **Nav scroll** — класс `.scrolled` при прокрутке
+2. **Burger menu** — мобильное меню
+3. **Active nav link** — подсветка при скролле
+4. **Scroll reveal** — IntersectionObserver
+5. **Hero video** — чередование двух клипов
 6. **3D Tilt Card** — mouse parallax на `#tiltCard`
 7. **Gallery** — бесконечный loop + drag + touch + lightbox
-8. **Shop preview** — загрузка 4 рандомных товаров с `PRODUCTS_API`
-9. **Contact form** — POST на `TRINITY_API`, показ success/error
-
-### Хелпер `escStr(str)`
-HTML-экранирование для безопасного рендеринга данных из API:
-`&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`, `"` → `&quot;`, `'` → `&#039;`
+8. **Shop preview** — 4 рандомных товара с WebP-оптимизацией (400px)
+9. **Contact form** — POST на `TRINITY_API`
 
 ---
 
-## 8. Логика JS (shop/shop.js)
+## 11. Логика JS (shop/shop.js)
 
 ### Константы
 ```javascript
-const PRODUCTS_API = 'https://ambersol.co.il/api/beautymania/products'
-const ORDER_API    = 'https://ambersol.co.il/api/beautymania/order'
+const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
+const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order'
+const RELATED_API   = 'https://ambersol.co.il/api/beautymania/related'
+const SITE_URL      = 'https://beautymania.co.il'
+const SUPABASE_URL  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 ```
 
 ### State
-- `allProducts` — все товары загруженные из API
-- `cart` — корзина, хранится в `localStorage('bm_cart')`
-- `activeCategory` — активный фильтр категории
-- `sortMode` — режим сортировки (`default | price_asc | price_desc | name_asc`)
+- `allProducts` — все товары из API
+- `cart` — корзина в `localStorage('bm_cart')`
+- `activeCategory` — активный фильтр
+- `sortMode` — режим сортировки
 
 ### Модули
-1. **Корзина** — `addToCart`, `updateCartQty`, `removeFromCart`, `saveCart`, `renderCart`
-2. **Badge** — счётчик на иконке корзины с pop-анимацией
-3. **Cart sidebar** — открытие/закрытие через overlay
-4. **Checkout modal** — форма с summary, POST на `ORDER_API`
-5. **Products grid** — загрузка, фильтрация, сортировка
-6. **Category filters** — динамические кнопки из уникальных категорий товаров
-7. **Qty controls** — инкремент/декремент количества на карточке товара
+1. **Корзина** — add/update/remove/save/render
+2. **Badge** — счётчик с pop-анимацией
+3. **Cart sidebar** — открытие/закрытие
+4. **Cross-sell** — `renderCrossSell()` при каждом `openCart()`
+5. **Checkout modal** — форма + summary + POST на ORDER_API
+6. **Products grid** — загрузка + фильтрация + сортировка
+7. **Category filters** — динамические кнопки
+8. **Qty controls** — инкремент/декремент
+9. **Product schema.org** — `injectProductSchema(allProducts)` после загрузки
+10. **Image optimization** — `optimizeImg(url, width)` везде где `<img>`
 
 ### Checkout flow
-1. Клиент кликает "В корзину" → товар в `cart`
-2. Открывает корзину → видит summary с итогом
-3. Кликает "Оформить заказ" → открывается модал с формой
+1. Клиент → "В корзину" → товар в `cart`
+2. Открывает корзину → cross-sell блок подгружается
+3. "Оформить заказ" → модал с формой
 4. Заполняет имя/email/телефон → отправка
-5. Каждый товар отправляется отдельным `POST /api/beautymania/order`
-6. При успехе: корзина очищается, форма сбрасывается, модал закрывается
+5. Каждый товар → отдельный `POST /api/beautymania/order`
+6. Успех: корзина очищается, модал закрывается
 
 ---
 
-## 9. Безопасность
+## 12. Безопасность
 
 ### CORS (Trinity side)
-Разрешённые origins для beautymania API:
 ```
 https://beautymania.co.il
 https://www.beautymania.co.il
-https://bm-site-eight.vercel.app  (Vercel preview)
+https://bm-site-eight.vercel.app
 http://localhost:3000
-http://127.0.0.1:5500
-http://localhost:5500
+http://127.0.0.1:5500 / http://localhost:5500
 ```
-**Важно:** wildcard `*.vercel.app` был убран — закрыта дыра (любой Vercel мог слать запросы).
+Wildcard `*.vercel.app` убран — любой Vercel проект не может слать запросы.
 
 ### Security Headers (vercel.json)
 - `Content-Security-Policy` — script/style/img/connect ограничены
-- `X-Frame-Options: DENY` — запрет iframe embedding
+- `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Permissions-Policy` — camera/microphone/geolocation отключены
 
 ### Tenant Isolation
-- `org_id` Beautymania захардкожен на сервере Trinity (env vars)
-- Клиент физически не может передать чужой org_id
-- Цена товара берётся из БД, не с клиента
+- `org_id` Beautymania захардкожен в env vars Trinity (не приходит с клиента)
+- Цена берётся из БД, не с клиента
+- `product_name` берётся из БД, не с клиента
+- Все `related_ids` в cross-sell API проверяются на принадлежность оргу
 
-### Rate Limiting
-- Все три API-роута защищены `ratelimitPublic` по IP
-
-### Idempotency
-- Уникальный индекс `idx_site_orders_idempotent` на `(org_id, customer_email, product_id, order_date)`
-- Двойной клик не создаст два заказа — второй упадёт с 409
+### Rate Limiting + Idempotency
+- Все публичные API защищены `ratelimitPublic` по IP
+- `idx_site_orders_idempotent` — двойной клик не создаст два заказа
 
 ---
 
-## 10. Поток заказа (полный пайплайн)
+## 13. Поток заказа (полный пайплайн)
 
 ```
 Клиент на beautymania.co.il
     ↓ POST /api/beautymania/order
-Trinity API (ambersol.co.il)
-    ↓ Проверка product в БД (org_id + is_active + quantity)
-    ↓ Optimistic lock: quantity = quantity - N
+Trinity API
+    ↓ Проверка product (org_id + is_active + quantity)
+    ↓ Optimistic lock: quantity -= N
     ↓ INSERT site_orders
-    ↓ INSERT notifications (для Анеты в Trinity)
-    ↓ [fire-and-forget] WhatsApp клиенту (Whapi Cloud)
+    ↓ INSERT notifications (для Анеты)
+    ↓ [fire-and-forget] WhatsApp клиенту
     ↓ [fire-and-forget] WhatsApp Анете (если notify_new_orders_wa=true)
     ↓ Email Анете (Resend)
     ↓ Supabase Realtime → SiteOrdersRealtimeProvider в Trinity
@@ -241,38 +345,33 @@ Trinity API (ambersol.co.il)
 
 ---
 
-## 11. Управление заказами в Trinity CRM
-
-После того как заказ создан через сайт, Анета управляет им в Trinity:
+## 14. Управление заказами в Trinity CRM
 
 **Путь:** `/sales` → вкладка "Заказы с сайта" (`SiteOrdersPanel`)
 
 ### Статусы заказа
-| Статус | Описание | WA клиенту |
-|--------|----------|-----------|
-| `new` | Новый заказ с сайта | При создании: "Заказ принят!" |
-| `confirmed` | Подтверждён | "✅ Заказ подтверждён, готовится к отправке" |
-| `shipped` | Отправлен | "📦 Заказ в пути, ожидайте 1-3 дня" |
-| `delivered` | Доставлен | "🎉 Заказ доставлен! Надеемся, понравится" |
-| `cancelled` | Отменён | "❌ Заказ отменён" + товар возвращается на склад |
+| Статус | Кнопка в UI | WA клиенту |
+|--------|-------------|-----------|
+| `new` | → Подтвердить | При создании: "✅ Заказ принят!" |
+| `confirmed` | → Отправлен | "✅ Заказ подтверждён, готовится к отправке" |
+| `shipped` | → Доставлен | "📦 Заказ в пути, ожидайте 1-3 дня" |
+| `delivered` | — | "🎉 Заказ доставлен!" |
+| `cancelled` | Всегда видна | "❌ Заказ отменён" + возврат товара на склад |
 
-### Что происходит при отмене
-- `site_orders.status = 'cancelled'`
-- RPC `increment_product_quantity` возвращает товар на склад
-- WhatsApp сообщение клиенту об отмене
+Параметр `send_wa: false` в PATCH-запросе отключает WA при нужде.
 
 ---
 
-## 12. Настройки уведомлений (Trinity)
+## 15. Настройки уведомлений (Trinity)
 
 **Путь:** `/settings/notifications` → карточка "WhatsApp-алерты"
 
-| Поле в organizations | Тип | Описание |
-|---------------------|-----|----------|
-| `notify_new_orders_wa` | boolean | Включить WA-алерт при новом заказе |
-| `notification_phone` | text | Телефон для получения алертов |
+| Поле в organizations | Тип | По умолчанию | Описание |
+|---------------------|-----|-------------|----------|
+| `notify_new_orders_wa` | boolean | false | Включить WA-алерт при новом заказе |
+| `notification_phone` | text | null | Телефон для получения алертов |
 
-**Формат сообщения владельцу:**
+**Формат сообщения:**
 ```
 🔔 Новый заказ с сайта!
 Товар: [Название]
@@ -282,13 +381,15 @@ Trinity API (ambersol.co.il)
 ```
 
 ### In-App уведомления (Realtime)
-- `SiteOrdersRealtimeProvider` — подписка через Supabase Realtime
-- При новом `site_order` → звук `/sounds/notification.wav` + Toast
-- Toast: оранжевая рамка, имя/товар/сумма, кнопка "Перейти к заказу"
+- `SiteOrdersRealtimeProvider` — подписка через Supabase Realtime на INSERT в `site_orders`
+- При событии: звук `/sounds/notification.wav` (880+1100Hz) + кастомный Toast
+- Toast: оранжевая рамка, имя/товар/сумма, кнопка "Перейти к заказу" → `/sales`
+- Инвалидация React Query `site-orders` и `new-orders-count`
+- Защита от дублей при React StrictMode через глобальный флаг `channelCreated`
 
 ---
 
-## 13. Webhook инвалидации кэша
+## 16. Webhook инвалидации кэша товаров
 
 **URL:** `POST https://ambersol.co.il/api/webhooks/products-updated`
 
@@ -297,68 +398,66 @@ Trinity API (ambersol.co.il)
 - Events: INSERT, UPDATE, DELETE
 - Header: `x-webhook-signature: <PRODUCTS_WEBHOOK_SECRET>`
 
-При изменении товара в Trinity → кэш `/api/beautymania/products` сбрасывается → сайт показывает актуальные данные сразу (не через 60 сек).
+При изменении товара в Trinity → `revalidatePath('/api/beautymania/products')` → сайт видит актуальные данные сразу (не через 60 сек кэша).
 
 ---
 
-## 14. Workflow деплоя
+## 17. Workflow деплоя
 
 ```bash
-# Локально — просто пушим main
 git add -A
 git commit -m "feat/fix: описание"
 git push origin main
-# → Vercel автоматически задеплоит static сайт
+# → Vercel деплоит статику автоматически, без билда
 ```
 
-**Важно:** bm_site — статичный HTML, нет билда, нет npm. Vercel просто отдаёт файлы как есть с заголовками из vercel.json.
+bm_site — чистый статичный HTML. Нет npm, нет билда. Vercel отдаёт файлы напрямую.
 
 ---
 
-## 15. История изменений
+## 18. История изменений
 
-### 01.04.2026 — Security Audit
+### 02.04.2026
 
-**Commit ab0929a** — `vercel.json` security headers
-- Добавлены: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+**Commit b274c82 (bm-site)** — SEO + Image optimization + Cross-sell frontend
+- `shop/index.html` — og-теги, canonical, robots
+- `shop/shop.js` — `injectProductSchema()` генерирует `ItemList+Product+Offer` JSON-LD
+- `shop/shop.js` — `optimizeImg()` через Supabase Transform (WebP, width, quality=80)
+- `main.js` — `optimizeImgMain()` для превью на главной (400px WebP)
+- `shop/shop.js` — cross-sell блок в корзине (`renderCrossSell()`)
+- `shop/shop.css` — стили `.cross-sell` секции
 
-### 01.04.2026 — Trinity API security fixes (в Trinity repo)
+**Commit 04902e9 (trinity)** — Cross-sell backend
+- `api/beautymania/related/route.ts` — GET /api/beautymania/related?ids=...
+- Суп. миграция `add_product_relations` — таблица `product_relations` с RLS
 
-**Commit a299f01** — CORS + product_name + env vars
-- CORS: убран wildcard `*.vercel.app` из `contact/route.ts` и `order/route.ts`
-- `product_name` теперь берётся из БД (не с клиента)
-- Добавлена проверка остатка склада (`quantity < requested → 409`)
-- `BM_ORG_ID`, `ANETA_USER_ID`, `ANETA_EMAIL` вынесены в env vars
+**Commit b007501 (trinity)** — Cross-sell UI в Trinity
+- `ProductRelationsManager.tsx` — компонент управления связями
+- `api/products/[id]/relations/route.ts` — GET/PUT эндпоинты
+- `ProductDetailSheet.tsx` — секция "Сопутствующие товары" встроена
 
-### 01.04.2026 — Order pipeline + WhatsApp (в Trinity repo)
+### 01.04.2026
 
-**Commit 95e17ea** — Stock decrement + WA notifications
-- Списание товара со склада при заказе (optimistic lock)
-- WhatsApp клиенту при создании заказа
-- WhatsApp клиенту при смене статуса (4 шаблона)
-- Возврат товара на склад при отмене
-- Новые статусы: confirmed / shipped / delivered
+**Commit ab0929a (bm-site)** — Security headers в vercel.json
 
-**Commit 21b08ab** — UI полный цикл + webhook
-- `SiteOrdersPanel` — новые статусы в фильтрах
-- `OrderDetailModal` — кнопки смены статуса
-- `webhooks/products-updated` — инвалидация кэша
-- Idempotency index в БД
+**Commit a299f01 (trinity)** — CORS fix, product_name из БД, env vars
 
-**Commit 1fcf368** — Notification system
-- WA-алерт владельцу (fire-and-forget, 8сек таймаут)
-- `notify_new_orders_wa` + `notification_phone` в organizations
-- UI настроек в `/settings/notifications`
-- `SiteOrdersRealtimeProvider` — Realtime toast + звук
+**Commit 95e17ea (trinity)** — Stock decrement, WA клиенту, статусы заказа
+
+**Commit 21b08ab (trinity)** — Полный UI цикла заказов, webhook products-updated
+
+**Commit 1fcf368 (trinity)** — WA-алерт владельцу, Realtime toast+звук, настройки уведомлений
 
 ---
 
-## 16. Контакты и доступы
+## 19. Контакты и доступы
 
 | Ресурс | Данные |
 |--------|--------|
-| GitHub | github.com/Creepie132/bm-site |
+| GitHub bm-site | github.com/Creepie132/bm-site |
+| GitHub Trinity | github.com/Creepie132/trinity |
 | Live сайт | https://beautymania.co.il |
 | Trinity CRM | https://ambersol.co.il |
-| Trinity API docs | F:\Amber_solutions_Kira\Trinity\docs\CLAUDE.md |
+| Trinity docs | F:\Amber_solutions_Kira\Trinity\docs\CLAUDE.md |
+| Supabase Trinity | app.supabase.com/project/tjryzcqvsavtllahjyrj |
 | Клиент | Анета (Beautymania) |
