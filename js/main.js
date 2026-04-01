@@ -4,6 +4,44 @@ const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
 const SITE_URL      = 'https://beautymania.co.il';
 const SUPABASE_IMG  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public';
 
+// ─── Traffic Attribution Tracker (лендинг) ───────────────────
+// Тот же трекер что и в shop.js — первый заход фиксируется здесь,
+// shop.js проверяет localStorage и не перезаписывает.
+;(function captureTrafficSource() {
+  const KEY = 'bm_traffic_source';
+  if (localStorage.getItem(KEY)) return;
+  const p = new URLSearchParams(window.location.search);
+  const utmSource = p.get('utm_source') || '';
+  const utmMedium = p.get('utm_medium') || '';
+  const utmCampaign = p.get('utm_campaign') || '';
+  let referrer = 'direct';
+  try {
+    const ref = document.referrer;
+    if (ref) {
+      const host = new URL(ref).hostname.replace(/^www\./, '');
+      if (host.includes('google.'))       referrer = 'google';
+      else if (host.includes('instagram.') || host.includes('l.instagram.')) referrer = 'instagram';
+      else if (host.includes('facebook.') || host.includes('l.facebook.'))   referrer = 'facebook';
+      else if (host.includes('tiktok.'))  referrer = 'tiktok';
+      else if (host.includes('t.co') || host.includes('twitter.')) referrer = 'twitter';
+      else if (host.includes('whatsapp.')) referrer = 'whatsapp';
+      else if (host.includes('bing.'))    referrer = 'bing';
+      else if (host.includes('yandex.'))  referrer = 'yandex';
+      else referrer = host || 'direct';
+    }
+  } catch (_) {}
+  const source = utmSource || referrer;
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      utm_source:   source,
+      utm_medium:   utmMedium   || (utmSource ? 'referral' : referrer === 'direct' ? 'direct' : 'organic'),
+      utm_campaign: utmCampaign || '',
+      referrer:     referrer,
+      captured_at:  new Date().toISOString(),
+    }));
+  } catch (_) {}
+})();
+
 function optimizeImgMain(url, width) {
   if (!url || !url.includes('supabase.co/storage/v1/object/public')) return url;
   try {

@@ -4,6 +4,70 @@ const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order'
 const SITE_URL      = 'https://beautymania.co.il'
 const SUPABASE_URL  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 
+// ─── Traffic Attribution Tracker ─────────────────────────────
+// Захватываем источник трафика при первом заходе и сохраняем в
+// localStorage. При повторных визитах данные НЕ перезаписываются
+// (первый клик имеет приоритет — first-touch attribution).
+// При оформлении заказа данные прикрепляются к payload.
+;(function captureTrafficSource() {
+  const STORAGE_KEY = 'bm_traffic_source'
+
+  // Уже сохранено — не трогаем (first-touch model)
+  if (localStorage.getItem(STORAGE_KEY)) return
+
+  // 1. Читаем UTM-параметры из URL
+  const params     = new URLSearchParams(window.location.search)
+  const utmSource   = params.get('utm_source')   || ''
+  const utmMedium   = params.get('utm_medium')   || ''
+  const utmCampaign = params.get('utm_campaign') || ''
+
+  // 2. Читаем referrer — определяем источник трафика
+  let referrer = 'direct'
+  try {
+    const ref = document.referrer
+    if (ref) {
+      const url  = new URL(ref)
+      const host = url.hostname.replace(/^www\./, '')
+      // Нормализуем популярные источники → читаемые имена
+      if (host.includes('google.'))    referrer = 'google'
+      else if (host.includes('instagram.') || host.includes('l.instagram.')) referrer = 'instagram'
+      else if (host.includes('facebook.') || host.includes('l.facebook.'))   referrer = 'facebook'
+      else if (host.includes('tiktok.'))  referrer = 'tiktok'
+      else if (host.includes('t.co') || host.includes('twitter.')) referrer = 'twitter'
+      else if (host.includes('whatsapp.')) referrer = 'whatsapp'
+      else if (host.includes('bing.'))  referrer = 'bing'
+      else if (host.includes('yandex.')) referrer = 'yandex'
+      else referrer = host || 'direct'
+    }
+  } catch (_) { /* невалидный URL — оставляем 'direct' */ }
+
+  // 3. UTM перекрывает автоматически определённый источник
+  const source = utmSource || referrer
+
+  const attribution = {
+    utm_source:   source,
+    utm_medium:   utmMedium   || (utmSource ? 'referral' : referrer === 'direct' ? 'direct' : 'organic'),
+    utm_campaign: utmCampaign || '',
+    referrer:     referrer,
+    captured_at:  new Date().toISOString(),
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(attribution))
+  } catch (_) { /* localStorage недоступен — silent fail */ }
+})()
+
+// Читает сохранённые данные атрибуции (используется при отправке заказа)
+function getTrafficAttribution() {
+  try {
+    const raw = localStorage.getItem('bm_traffic_source')
+    if (!raw) return { utm_source: 'direct', utm_medium: 'direct', utm_campaign: '', referrer: 'direct' }
+    return JSON.parse(raw)
+  } catch (_) {
+    return { utm_source: 'direct', utm_medium: 'direct', utm_campaign: '', referrer: 'direct' }
+  }
+}
+
 // ─── State ───────────────────────────────────────────────────
 let allProducts      = []      // весь массив из API — никогда не мутируется
 let filteredProducts = []      // активный срез для рендера (результат фильтрации)
@@ -208,6 +272,9 @@ document.getElementById('checkoutForm')?.addEventListener('submit', async (e) =>
   const message = document.getElementById('coMessage').value.trim()
 
   try {
+    // Читаем данные атрибуции трафика из localStorage
+    const attribution = getTrafficAttribution()
+
     // Отправляем каждый товар отдельным запросом
     await Promise.all(cart.map(item =>
       fetch(ORDER_API, {
@@ -219,6 +286,11 @@ document.getElementById('checkoutForm')?.addEventListener('submit', async (e) =>
           quantity:     item.qty,
           name, email, phone,
           message: message + (cart.length > 1 ? `\n\n[Заказ на ${cart.length} товаров, итого ₪${cartTotal().toFixed(0)}]` : ''),
+          // Traffic attribution
+          utm_source:   attribution.utm_source   || 'direct',
+          utm_medium:   attribution.utm_medium   || 'direct',
+          utm_campaign: attribution.utm_campaign || '',
+          referrer:     attribution.referrer     || 'direct',
         }),
       })
     ))
