@@ -5,13 +5,13 @@ const SITE_URL      = 'https://beautymania.co.il'
 const SUPABASE_URL  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 
 // ─── State ───────────────────────────────────────────────────
-let allProducts = []
+let allProducts      = []      // весь массив из API — никогда не мутируется
+let filteredProducts = []      // активный срез для рендера (результат фильтрации)
 let cart = JSON.parse(localStorage.getItem('bm_cart') || '[]')
 let activeCategory = 'all'
-let sortMode = 'default'
-let searchQuery = ''
-let currentPage = 1
-const PAGE_SIZE = 10
+let sortMode       = 'default'
+let currentPage    = 1
+const PAGE_SIZE    = 10
 
 // ─── Nav burger ──────────────────────────────────────────────
 const burger = document.getElementById('burger')
@@ -239,14 +239,14 @@ document.getElementById('checkoutForm')?.addEventListener('submit', async (e) =>
 
 // ─── Products ────────────────────────────────────────────────
 async function loadProducts() {
-  const grid = document.getElementById('shopGrid')
   try {
     const res = await fetch(PRODUCTS_API)
     if (!res.ok) throw new Error()
     const { products } = await res.json()
-    allProducts = products || []
+    allProducts      = products || []
+    filteredProducts = allProducts          // изначально = весь массив
     buildCategoryFilters()
-    renderProducts()
+    renderProducts(true)
     injectProductSchema(allProducts)
   } catch {
     document.getElementById('shopGrid').innerHTML =
@@ -257,10 +257,9 @@ async function loadProducts() {
 function buildCategoryFilters() {
   const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))]
   const bar  = document.getElementById('shopFilters')
-  const all  = bar.querySelector('[data-cat="all"]')
   cats.forEach(cat => {
     const btn = document.createElement('button')
-    btn.className = 'filter-chip'
+    btn.className  = 'filter-chip'
     btn.dataset.cat = cat
     btn.textContent = cat
     bar.appendChild(btn)
@@ -270,48 +269,60 @@ function buildCategoryFilters() {
     if (!chip) return
     bar.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
     chip.classList.add('active')
-    activeCategory = chip.dataset.cat
-    currentPage = 1
-    renderProducts()
+    activeCategory   = chip.dataset.cat
+    filteredProducts = applyFilters()
+    currentPage      = 1
+    renderProducts(true)
   })
 }
 
-function sortedFiltered() {
-  let list = activeCategory === 'all' ? [...allProducts] : allProducts.filter(p => p.category === activeCategory)
-  if (searchQuery.length >= 2) {
-    const q = searchQuery.toLowerCase()
-    list = list.filter(p => p.name.toLowerCase().includes(q))
+// Возвращает новый массив: категория + поиск + сортировка.
+// Не мутирует allProducts. Вызывается перед каждым renderProducts(true).
+function applyFilters() {
+  const searchVal = document.getElementById('shopSearch')?.value.trim().toLowerCase() || ''
+  let list = activeCategory === 'all'
+    ? [...allProducts]
+    : allProducts.filter(p => p.category === activeCategory)
+
+  if (searchVal.length >= 2) {
+    list = list.filter(p => p.name.toLowerCase().includes(searchVal))
   }
-  if (sortMode === 'price_asc')  list.sort((a,b) => (a.sell_price||0) - (b.sell_price||0))
-  if (sortMode === 'price_desc') list.sort((a,b) => (b.sell_price||0) - (a.sell_price||0))
-  if (sortMode === 'name_asc')   list.sort((a,b) => a.name.localeCompare(b.name))
+
+  if (sortMode === 'price_asc')  list.sort((a, b) => (a.sell_price || 0) - (b.sell_price || 0))
+  if (sortMode === 'price_desc') list.sort((a, b) => (b.sell_price || 0) - (a.sell_price || 0))
+  if (sortMode === 'name_asc')   list.sort((a, b) => a.name.localeCompare(b.name))
+
   return list
 }
 
-function renderProducts() {
-  const grid = document.getElementById('shopGrid')
+// clearContainer = true  → очищаем grid, рисуем срез с начала (поиск / фильтр / сортировка)
+// clearContainer = false → дописываем следующую страницу в конец (кнопка "Загрузить ещё")
+function renderProducts(clearContainer) {
+  const grid        = document.getElementById('shopGrid')
   const loadMoreBtn = document.getElementById('loadMoreBtn')
-  const list = sortedFiltered()
 
-  if (list.length === 0) {
-    grid.innerHTML = searchQuery.length >= 2
-      ? `<p class="shop-empty">По запросу «${esc(searchQuery)}» ничего не найдено</p>`
+  // Пустой результат — показываем заглушку
+  if (filteredProducts.length === 0) {
+    const searchVal = document.getElementById('shopSearch')?.value.trim() || ''
+    grid.innerHTML  = searchVal.length >= 2
+      ? `<p class="shop-empty">По запросу «${esc(searchVal)}» ничего не найдено</p>`
       : '<p class="shop-empty">Нет товаров в этой категории</p>'
     if (loadMoreBtn) loadMoreBtn.style.display = 'none'
     return
   }
 
-  // Клиентская пагинация: показываем страницы 1..currentPage
-  const visible = list.slice(0, currentPage * PAGE_SIZE)
-  const hasMore = visible.length < list.length
+  // Срез текущей страницы
+  const start   = (currentPage - 1) * PAGE_SIZE
+  const end     = currentPage * PAGE_SIZE
+  const slice   = filteredProducts.slice(start, end)
+  const hasMore = end < filteredProducts.length
 
   function cardHtml(p) {
-    return `
-    <div class="sp-card" data-id="${p.id}">
+    return `<div class="sp-card" data-id="${p.id}">
       <div class="sp-card__img">
         ${p.image_url
           ? `<img src="${esc(optimizeImg(p.image_url, 600))}" alt="${esc(p.name)}" loading="lazy" width="600" height="600" />`
-          : `<div class="sp-card__placeholder">✦</div>`}
+          : '<div class="sp-card__placeholder">✦</div>'}
         ${p.category ? `<span class="sp-card__badge">${esc(p.category)}</span>` : ''}
       </div>
       <div class="sp-card__body">
@@ -333,63 +344,79 @@ function renderProducts() {
     </div>`
   }
 
-  grid.innerHTML = visible.map(cardHtml).join('')
-
-  // qty controls
-  grid.querySelectorAll('.qty-ctrl__btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation()
-      const id  = btn.dataset.id
-      const el  = document.getElementById(`qty-${id}`)
-      let val = parseInt(el.textContent) || 1
-      if (btn.dataset.action === 'plus')  val = Math.min(99, val + 1)
-      if (btn.dataset.action === 'minus') val = Math.max(1, val - 1)
-      el.textContent = val
+  if (clearContainer) {
+    // Полная перерисовка — очищаем и вставляем срез страницы 1
+    grid.innerHTML = slice.map(cardHtml).join('')
+  } else {
+    // Append — добавляем только новые карточки в конец
+    const fragment = document.createDocumentFragment()
+    slice.forEach(p => {
+      const tmp = document.createElement('div')
+      tmp.innerHTML = cardHtml(p)
+      fragment.appendChild(tmp.firstElementChild)
     })
-  })
+    grid.appendChild(fragment)
+  }
 
-  // add to cart
-  grid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
+  // Навешиваем обработчики только на новые карточки
+  const newCards = clearContainer
+    ? grid.querySelectorAll('.sp-card')
+    : grid.querySelectorAll(`.sp-card:nth-child(n+${start + 1})`)
+
+  newCards.forEach(card => {
+    card.querySelectorAll('.qty-ctrl__btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation()
+        const id  = btn.dataset.id
+        const el  = document.getElementById(`qty-${id}`)
+        let val   = parseInt(el.textContent) || 1
+        val = btn.dataset.action === 'plus' ? Math.min(99, val + 1) : Math.max(1, val - 1)
+        el.textContent = val
+      })
+    })
+    card.querySelector('.add-to-cart-btn')?.addEventListener('click', e => {
       e.stopPropagation()
-      const id = btn.dataset.id
+      const id      = e.currentTarget.dataset.id
       const product = allProducts.find(p => p.id === id)
       if (!product) return
       const qty = parseInt(document.getElementById(`qty-${id}`)?.textContent) || 1
       addToCart(product, qty)
-      btn.textContent = '✓ Добавлено'
-      btn.classList.add('added')
+      e.currentTarget.textContent = '✓ Добавлено'
+      e.currentTarget.classList.add('added')
       setTimeout(() => {
-        btn.textContent = 'В корзину'
-        btn.classList.remove('added')
+        e.currentTarget.textContent = 'В корзину'
+        e.currentTarget.classList.remove('added')
       }, 1500)
     })
   })
 
-  // кнопка "Загрузить ещё"
-  if (loadMoreBtn) {
-    loadMoreBtn.style.display = hasMore ? 'block' : 'none'
-  }
+  if (loadMoreBtn) loadMoreBtn.style.display = hasMore ? 'block' : 'none'
 }
 
-// Sort
+// ─── Sort ─────────────────────────────────────────────────────
 document.getElementById('sortSelect')?.addEventListener('change', e => {
-  sortMode = e.target.value
-  currentPage = 1
-  renderProducts()
+  sortMode         = e.target.value
+  filteredProducts = applyFilters()
+  currentPage      = 1
+  renderProducts(true)
 })
 
-// Search — in-memory, no API calls
+// ─── Search — строго in-memory, нет fetch ─────────────────────
 document.getElementById('shopSearch')?.addEventListener('input', e => {
-  searchQuery = e.target.value.trim()
+  const val = e.target.value.trim()
+  filteredProducts = val.length >= 2
+    ? allProducts
+        .filter(p => activeCategory === 'all' || p.category === activeCategory)
+        .filter(p => p.name.toLowerCase().includes(val.toLowerCase()))
+    : applyFilters()           // сброс поиска → только категория + сортировка
   currentPage = 1
-  renderProducts()
+  renderProducts(true)
 })
 
-// Load more
+// ─── Load more — append, не полный ре-рендер ─────────────────
 document.getElementById('loadMoreBtn')?.addEventListener('click', () => {
   currentPage++
-  renderProducts()
+  renderProducts(false)
 })
 
 // ─── Init ─────────────────────────────────────────────────────
