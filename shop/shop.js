@@ -9,6 +9,9 @@ let allProducts = []
 let cart = JSON.parse(localStorage.getItem('bm_cart') || '[]')
 let activeCategory = 'all'
 let sortMode = 'default'
+let searchQuery = ''
+let currentPage = 1
+const PAGE_SIZE = 10
 
 // ─── Nav burger ──────────────────────────────────────────────
 const burger = document.getElementById('burger')
@@ -268,12 +271,17 @@ function buildCategoryFilters() {
     bar.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
     chip.classList.add('active')
     activeCategory = chip.dataset.cat
+    currentPage = 1
     renderProducts()
   })
 }
 
 function sortedFiltered() {
   let list = activeCategory === 'all' ? [...allProducts] : allProducts.filter(p => p.category === activeCategory)
+  if (searchQuery.length >= 2) {
+    const q = searchQuery.toLowerCase()
+    list = list.filter(p => p.name.toLowerCase().includes(q))
+  }
   if (sortMode === 'price_asc')  list.sort((a,b) => (a.sell_price||0) - (b.sell_price||0))
   if (sortMode === 'price_desc') list.sort((a,b) => (b.sell_price||0) - (a.sell_price||0))
   if (sortMode === 'name_asc')   list.sort((a,b) => a.name.localeCompare(b.name))
@@ -282,13 +290,22 @@ function sortedFiltered() {
 
 function renderProducts() {
   const grid = document.getElementById('shopGrid')
+  const loadMoreBtn = document.getElementById('loadMoreBtn')
   const list = sortedFiltered()
+
   if (list.length === 0) {
-    grid.innerHTML = '<p class="shop-empty">Нет товаров в этой категории</p>'
+    grid.innerHTML = searchQuery.length >= 2
+      ? `<p class="shop-empty">По запросу «${esc(searchQuery)}» ничего не найдено</p>`
+      : '<p class="shop-empty">Нет товаров в этой категории</p>'
+    if (loadMoreBtn) loadMoreBtn.style.display = 'none'
     return
   }
-  grid.innerHTML = list.map(p => {
-    const qty = 1
+
+  // Клиентская пагинация: показываем страницы 1..currentPage
+  const visible = list.slice(0, currentPage * PAGE_SIZE)
+  const hasMore = visible.length < list.length
+
+  function cardHtml(p) {
     return `
     <div class="sp-card" data-id="${p.id}">
       <div class="sp-card__img">
@@ -314,7 +331,9 @@ function renderProducts() {
         </div>
       </div>
     </div>`
-  }).join('')
+  }
+
+  grid.innerHTML = visible.map(cardHtml).join('')
 
   // qty controls
   grid.querySelectorAll('.qty-ctrl__btn').forEach(btn => {
@@ -346,11 +365,30 @@ function renderProducts() {
       }, 1500)
     })
   })
+
+  // кнопка "Загрузить ещё"
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display = hasMore ? 'block' : 'none'
+  }
 }
 
 // Sort
 document.getElementById('sortSelect')?.addEventListener('change', e => {
   sortMode = e.target.value
+  currentPage = 1
+  renderProducts()
+})
+
+// Search — in-memory, no API calls
+document.getElementById('shopSearch')?.addEventListener('input', e => {
+  searchQuery = e.target.value.trim()
+  currentPage = 1
+  renderProducts()
+})
+
+// Load more
+document.getElementById('loadMoreBtn')?.addEventListener('click', () => {
+  currentPage++
   renderProducts()
 })
 

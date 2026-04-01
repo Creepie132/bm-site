@@ -73,13 +73,21 @@
       <div class="shop-filters" id="shopFilters">
         <button class="filter-chip active" data-cat="all">Все</button>
       </div>
-      <div class="shop-sort">
-        <select id="sortSelect">
-          <option value="default">По умолчанию</option>
-          <option value="price_asc">Цена: возрастание</option>
-          <option value="price_desc">Цена: убывание</option>
-          <option value="name_asc">По названию</option>
-        </select>
+      <div class="shop-toolbar__right">
+        <div class="shop-search">
+          <svg class="shop-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="search" id="shopSearch" class="shop-search__input" placeholder="Поиск товаров..." autocomplete="off" />
+        </div>
+        <div class="shop-sort">
+          <select id="sortSelect">
+            <option value="default">По умолчанию</option>
+            <option value="price_asc">Цена: возрастание</option>
+            <option value="price_desc">Цена: убывание</option>
+            <option value="name_asc">По названию</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="shop-grid" id="shopGrid">
@@ -87,6 +95,9 @@
         <div class="shop-loading__spinner"></div>
         <span>Загружаем товары</span>
       </div>
+    </div>
+    <div class="shop-load-more">
+      <button class="btn btn--outline" id="loadMoreBtn" style="display:none">Загрузить ещё</button>
     </div>
   </div>
 </main>
