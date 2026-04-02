@@ -502,19 +502,11 @@ function esc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')
 }
 
-// ─── Image optimization via Supabase Transform ───────────────
-// Конвертирует Supabase Storage URL в оптимизированный WebP
-// /storage/v1/object/public/... → /storage/v1/render/image/public/...?width=N&quality=80
-function optimizeImg(url, width = 600) {
-  if (!url) return url
-  try {
-    // Только обрабатываем Supabase Storage URLs
-    if (!url.includes('supabase.co/storage/v1/object/public')) return url
-    const path = url.split('/storage/v1/object/public')[1]
-    return `${SUPABASE_URL}${path}?width=${width}&quality=80&format=webp`
-  } catch {
-    return url
-  }
+// ─── Image URL passthrough ────────────────────────────────────
+// Supabase Image Transform (/render/image/) требует Pro Plan.
+// Используем прямой /object/public/ URL без трансформаций.
+function optimizeImg(url, _width = 600) {
+  return url || ''
 }
 
 // ─── Product schema.org (JSON-LD) ────────────────────────────
