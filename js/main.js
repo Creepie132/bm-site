@@ -2,7 +2,7 @@
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
 const SITE_URL      = 'https://beautymania.co.il';
-const SUPABASE_IMG  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public';
+// Image Transform требует Supabase Pro — используем прямые URL
 
 // ─── Traffic Attribution Tracker (лендинг) ───────────────────
 // Тот же трекер что и в shop.js — первый заход фиксируется здесь,
@@ -42,12 +42,8 @@ const SUPABASE_IMG  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/rende
   } catch (_) {}
 })();
 
-function optimizeImgMain(url, width) {
-  if (!url || !url.includes('supabase.co/storage/v1/object/public')) return url;
-  try {
-    const path = url.split('/storage/v1/object/public')[1];
-    return `${SUPABASE_IMG}${path}?width=${width}&quality=80&format=webp`;
-  } catch { return url; }
+function optimizeImgMain(url, _width) {
+  return url || '';
 }
 
 // ─── NAV scroll ──────────────────────────────────────────────
