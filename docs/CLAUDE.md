@@ -415,6 +415,20 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ---
 
+### 13.04.2026
+
+**Commit 3d60302 (bm-site)** — Skeleton shimmer: фикс чёрных пространств при медленной загрузке
+
+**Проблема:** При медленном соединении все img-контейнеры с фиксированной высотой (галерея 380px, блог 260px, товары 300px/280px) отображались как чёрные прямоугольники — фон страницы (#0a0a0a) просвечивал сквозь незагруженные изображения.
+
+**Решение:**
+- `css/style.css` — `@keyframes shimmer` + shimmer-фон на `.blog-card__img`, `.product-card__img`, `.gallery__item`, `.tilt-card__inner`. Класс `.img-loaded` снимает анимацию.
+- `shop/shop.css` — `@keyframes shimmer` + shimmer на `.sp-card__img` + `.sp-card__img.img-loaded`
+- `js/main.js` — функция skeleton-watcher: после `load` события на img вешает `.img-loaded` на родительский контейнер. Экспортируется как `window._clearImgSkeleton()` для динамических карточек.
+- `shop/shop.js` — после `grid.innerHTML = ...` вызывается `requestAnimationFrame` с навешиванием `.img-loaded` на все уже загруженные img.
+
+---
+
 ## 18. История изменений
 
 ### 02.04.2026
