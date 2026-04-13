@@ -207,6 +207,7 @@ initReveal();
       `).join('');
 
       initReveal();
+      if (window._clearImgSkeleton) window._clearImgSkeleton();
     } catch (err) {
       console.error('[Shop] Failed to load products:', err);
       grid.innerHTML = '<p class="shop__empty">Не удалось загрузить товары.</p>';
@@ -252,6 +253,26 @@ initReveal();
       btn.disabled = false;
     }
   });
+})();
+
+// ─── Image Skeleton — снимаем shimmer после загрузки изображений ─────────────
+(function () {
+  function clearSkeleton(img) {
+    const parent = img.closest('.blog-card__img, .product-card__img, .gallery__item, .tilt-card__inner');
+    if (parent) parent.classList.add('img-loaded');
+  }
+  function applyToAll() {
+    document.querySelectorAll('.blog-card__img img, .product-card__img img, .gallery__item img, .tilt-card__inner img').forEach(img => {
+      if (img.complete && img.naturalWidth > 0) {
+        clearSkeleton(img);
+      } else {
+        img.addEventListener('load', () => clearSkeleton(img), { once: true });
+      }
+    });
+  }
+  applyToAll();
+  // Для динамически загружаемых карточек (shop preview)
+  window._clearImgSkeleton = applyToAll;
 })();
 
 // ─── Helpers ─────────────────────────────────────────────────

@@ -3,6 +3,11 @@
    Inherits: ../css/style.css (vars, nav, footer, buttons, forms)
 ═══════════════════════════════════════════ */
 
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
 /* ── Page base ── */
 body { background: var(--black); overflow-x: hidden; }
 
@@ -192,8 +197,15 @@ body { background: var(--black); overflow-x: hidden; }
   position: relative;
   height: 280px;
   overflow: hidden;
-  background: #0d0d0d;
+  background: #161616;
+  background-image: linear-gradient(90deg, #161616 0%, #222 40%, #161616 80%);
+  background-size: 400px 100%;
+  animation: shimmer 1.8s infinite linear;
   flex-shrink: 0;
+}
+.sp-card__img.img-loaded {
+  animation: none;
+  background: #161616;
 }
 .sp-card__img img {
   width: 100%; height: 100%;

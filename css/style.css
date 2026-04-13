@@ -325,6 +325,40 @@ ul { list-style: none; }
 .footer__credit a { color: var(--gold-dim); }
 .footer__credit a:hover { color: var(--gold); }
 
+/* ── SKELETON LOADING — предотвращает чёрные пространства при медленной загрузке ── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+.blog-card__img,
+.product-card__img,
+.gallery__item,
+.tilt-card__inner {
+  background: var(--black-card);
+  background-image: linear-gradient(
+    90deg,
+    var(--black-card) 0%,
+    #222 40%,
+    var(--black-card) 80%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+/* Как только img загрузился — снимаем shimmer (поддерживается в современных браузерах) */
+.blog-card__img:has(img[complete]),
+.product-card__img:has(img[complete]),
+.gallery__item:has(img[complete]),
+.tilt-card__inner:has(img[complete]),
+.blog-card__img.img-loaded,
+.product-card__img.img-loaded,
+.gallery__item.img-loaded,
+.tilt-card__inner.img-loaded {
+  animation: none;
+  background: var(--black-card);
+}
+/* Hero — гарантированный фон пока видео грузится */
+.hero { background: var(--black); }
+
 /* ── ANIMATIONS ── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scrollLine { 0%,100% { opacity: 0.2; transform: scaleY(0.5); } 50% { opacity: 1; transform: scaleY(1); } }

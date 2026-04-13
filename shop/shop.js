@@ -419,6 +419,19 @@ function renderProducts(clearContainer) {
   if (clearContainer) {
     // Полная перерисовка — очищаем и вставляем срез страницы 1
     grid.innerHTML = slice.map(cardHtml).join('')
+    // Снимаем skeleton shimmer после рендера
+    requestAnimationFrame(() => {
+      grid.querySelectorAll('.sp-card__img img, .sp-card__img').forEach(el => {
+        if (el.tagName === 'IMG') {
+          const parent = el.closest('.sp-card__img');
+          if (el.complete && el.naturalWidth > 0) {
+            parent && parent.classList.add('img-loaded');
+          } else {
+            el.addEventListener('load', () => parent && parent.classList.add('img-loaded'), { once: true });
+          }
+        }
+      });
+    });
   } else {
     // Append — добавляем только новые карточки в конец
     const fragment = document.createDocumentFragment()
