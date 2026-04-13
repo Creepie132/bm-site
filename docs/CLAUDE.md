@@ -417,7 +417,13 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ### 13.04.2026
 
-**Commit 3d60302 (bm-site)** — Skeleton shimmer: фикс чёрных пространств при медленной загрузке
+**Commit d0d0735 (bm-site)** — Favicon + fix social links
+
+- `favicon.ico`, `favicon-32.png`, `favicon-192.png` — вырезана красная кошка из `Logo_Bm_Trans.png` через PowerShell + System.Drawing, прозрачный фон, три размера
+- `index.html` — `<link rel="icon">` + `<link rel="apple-touch-icon">` добавлены в `<head>`; ссылки соцсетей исправлены: Instagram → `https://www.instagram.com/anetta_mari/`, Facebook → `https://www.facebook.com/aneta.marinina`
+- `shop/index.html` — аналогичные теги favicon добавлены в `<head>`
+
+: фикс чёрных пространств при медленной загрузке
 
 **Проблема:** При медленном соединении все img-контейнеры с фиксированной высотой (галерея 380px, блог 260px, товары 300px/280px) отображались как чёрные прямоугольники — фон страницы (#0a0a0a) просвечивал сквозь незагруженные изображения.
 
