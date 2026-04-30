@@ -436,7 +436,7 @@ ul { list-style: none; }
   position: absolute; top: -35px; width: 140%; left: -20%;
   display: flex; justify-content: center; z-index: 2; pointer-events: none;
 }
-.bm-bottle-img { width: 100%; display: block; user-select: none; mix-blend-mode: screen; }
+.bm-bottle-img { width: 100%; display: block; user-select: none; }
 .bm-shadow {
   position: absolute; bottom: 88px; left: 50%; transform: translateX(-50%);
   width: 90px; height: 14px; border-radius: 50%;
