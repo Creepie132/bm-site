@@ -439,6 +439,17 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ### 30.04.2026 (2)
 
+**Commit 35d3acb (bm-site)** — fix: carousel side cards invisible, only bottle visible
+
+**Проблема:** Боковые карточки выглядели как тёмные прямоугольники — некрасиво.
+
+**Решение (Вариант А):**
+- `index.html` — в каждую `.bm-card` добавлен `<div class="bm-card-bg"></div>` — отдельный слой для фона карточки.
+- `css/style.css` — `.bm-card` фон стал `transparent`. Новый `.bm-card-bg` — `position: absolute; inset: 0; background: #111; border-radius: 20px; opacity: var(--bm-bg-op, 1)` — управляется через CSS-переменную.
+- `js/main.js` — `cardBgs` добавлен в querySelectorAll. В `applyProgress`: у задних (`absP >= 1`) `--bm-bg-op: 0` — фон исчезает, виден только флакон. У активной — `--bm-bg-op: 1`. `filter: brightness(0.5)` у задних даёт лёгкое затемнение флакона.
+
+**Эффект:** боковые карточки — невидимы (только затемнённый флакон парит в воздухе), активная — полная карточка с рамкой и glow.
+
 **Commit 181807e (bm-site)** — fix: carousel border via ::before pseudo-element with glow
 
 **Проблема:** Боковые карточки карусели отображали рамку как обрезанный артефакт — `border` обрезался краем вьюпорта и выглядел некрасиво.
