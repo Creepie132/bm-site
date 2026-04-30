@@ -430,40 +430,31 @@ ul { list-style: none; }
 }
 .bm-card {
   position: relative; width: 234px; height: 320px; border-radius: 20px;
-  background: transparent; border: none;
+  background: #111; border: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
   transition: transform 700ms, filter 700ms;
 }
-/* Фон карточки — прячется у боковых */
+/* Фон карточки — всегда виден */
 .bm-card-bg {
   position: absolute; inset: 0; border-radius: 20px;
   background: #111;
-  opacity: var(--bm-bg-op, 1);
-  transition: opacity 700ms;
   pointer-events: none; z-index: 0;
 }
-/* Псевдо-рамка */
+/* Рамка — только у активной карточки */
 .bm-card::before {
   content: ''; position: absolute; inset: 0; border-radius: 20px;
-  border: 1px solid rgba(201,168,76,0.45);
-  box-shadow: 0 0 24px rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.5);
+  box-shadow: 0 0 32px rgba(201,168,76,0.18), 0 0 8px rgba(201,168,76,0.10);
   opacity: var(--bm-border-op, 0);
-  transition: opacity 700ms, box-shadow 700ms;
+  transition: opacity 700ms;
   pointer-events: none; z-index: 10;
 }
-.bm-card.bm-active::before {
-  border-color: rgba(201,168,76,0.6);
-  box-shadow: 0 0 32px rgba(201,168,76,0.18), 0 0 8px rgba(201,168,76,0.10);
-}
-/* Флакон внутри карточки — свой filter независим от карточки через isolation */
+.bm-card:active { cursor: grabbing; }
 .bm-bottle-wrap {
   position: absolute; top: -70px; width: 130%; left: -15%;
   display: flex; justify-content: center; z-index: 2; pointer-events: none;
-  transition: transform 700ms, filter 700ms;
-  filter: var(--bm-bottle-filter, brightness(1));
 }
-.bm-card:active { cursor: grabbing; }
 .bm-bottle-img { width: 100%; display: block; user-select: none; }
 /* PNG с чёрным фоном — mix-blend-mode screen убирает чёрный */
 .bm-bottle-img.bm-blend { mix-blend-mode: screen; }

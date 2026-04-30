@@ -344,36 +344,29 @@ function escStr(str) {
       const absP = Math.abs(prog);
       const dur = SPD + 'ms';
       const isActive = absP === 0;
-      const isSide = absP >= 1;
 
-      // Карточка: масштаб
-      cards[i].style.transition = 'transform ' + dur;
-      cards[i].style.transform = 'scale(' + (1 - absP * 0.15) + ')';
+      cards[i].style.transition = 'transform ' + dur + ', filter ' + dur;
+      cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
+      cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
 
-      // Флакон: смещение + поворот + затемнение
-      bottleWraps[i].style.transition = 'transform ' + dur + ', filter ' + dur;
+      // Рамка — только у активной, у остальных opacity 0
+      cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
+      cards[i].classList.toggle('bm-active', isActive);
+
       var imgTx = prog * -80;
       var imgRot = absP * 15 - 15;
-      bottleWraps[i].style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
-      bottleWraps[i].style.filter = isSide ? 'brightness(0.3)' : 'brightness(1)';
+      const bw = bottleWraps[i];
+      bw.style.transition = 'transform ' + dur;
+      bw.style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
 
       shadows[i].style.transition = 'transform ' + dur;
       shadows[i].style.transform = 'translateX(' + (imgTx / 2) + 'px)';
 
-      // Фон карточки: исчезает у боковых
-      cards[i].style.setProperty('--bm-bg-op', isSide ? '0' : '1');
-
-      // Рамка: только у активной
-      cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
-      cards[i].classList.toggle('bm-active', isActive);
-
-      // Текст: уезжает вниз у боковых
+      var textY = absP * 50;
       [cats[i], names[i], prices[i]].forEach(function(s, si) {
         if (!s) return;
         s.style.transition = 'transform ' + dur;
-        s.style.transform = isSide
-          ? 'translateY(' + (50 * (si + 1)) + 'px)'
-          : 'translateY(0)';
+        s.style.transform = 'translateY(' + (textY * (si + 1)) + 'px)';
       });
     }
 
