@@ -437,6 +437,20 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 30.04.2026 (3)
+
+**Commit 7d6aa23 (bm-site)** — fix: carousel side cards — убрана тёмная рамка
+
+**Проблема:** У боковых карточек карусели бестселлеров отображался тёмный прямоугольник фона (`.bm-card-bg`) даже когда карточка не активна.
+
+**Причина:** JS не управлял `opacity` у `.bm-card-bg` — переменная `--bm-bg-op` из CSS никогда не выставлялась.
+
+**Решение:**
+- `css/style.css` — `.bm-card` фон изменён с `#111` на `transparent`. `.bm-card-bg` получил `transition: opacity 700ms`.
+- `js/main.js` — в `applyProgress()` добавлено `cardBgs[i].style.opacity = isActive ? '1' : '0'`.
+
+**Эффект:** боковые флаконы парят на чёрном фоне страницы без тёмного ящика.
+
 ### 30.04.2026 (2)
 
 **Commit 35d3acb (bm-site)** — fix: carousel side cards invisible, only bottle visible
