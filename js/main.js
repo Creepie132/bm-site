@@ -282,120 +282,219 @@ function escStr(str) {
 }
 
 
-/* ── BESTSELLERS CAROUSEL ── */
-(function() {
-  const track = document.getElementById('bmTrack');
-  const outer = document.getElementById('bmOuter');
-  const btnPrev = document.getElementById('bmPrev');
-  const btnNext = document.getElementById('bmNext');
-  const dotsEl = document.getElementById('bmDots');
-  if (!track) return;
-
-  const slides = track.querySelectorAll('.bm-slide');
-  const cards = track.querySelectorAll('.bm-card');
-  const cardBgs = track.querySelectorAll('.bm-card-bg');
-  const bottleWraps = track.querySelectorAll('.bm-bottle-wrap');
-  const imgs = track.querySelectorAll('.bm-bottle-img');
-  const shadows = track.querySelectorAll('.bm-shadow');
-  const infos = track.querySelectorAll('.bm-info');
-  const cats = track.querySelectorAll('.bm-cat span');
-  const names = track.querySelectorAll('.bm-name span');
-  const prices = track.querySelectorAll('.bm-price span');
-  const TOTAL = slides.length;
+/* ── BESTSELLERS CAROUSEL — динамический, бесконечный loop ── */
+(function () {
+  const BESTSELLERS_API = 'https://ambersol.co.il/api/beautymania/bestsellers';
   const SLIDE_W = 260;
   const SPD = 700;
-  let current = 0;
 
-  // Загрузка цен из Trinity API по имени товара
-  fetch('https://ambersol.co.il/api/beautymania/products')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var products = data.products || data || [];
-      names.forEach(function(nameEl, i) {
-        var cardName = nameEl.textContent.trim().toLowerCase();
-        var match = products.find(function(p) {
-          return p.name && p.name.trim().toLowerCase().indexOf(cardName) !== -1
-              || cardName.indexOf((p.name || '').trim().toLowerCase()) !== -1;
-        });
-        if (match && match.sell_price) {
-          prices[i].textContent = '₪' + Number(match.sell_price).toFixed(0);
-        }
-      });
-    })
-    .catch(function() {}); // тихо — цены просто не обновятся
+  const track  = document.getElementById('bmTrack');
+  const outer  = document.getElementById('bmOuter');
+  const btnPrev = document.getElementById('bmPrev');
+  const btnNext = document.getElementById('bmNext');
+  const dotsEl  = document.getElementById('bmDots');
+  if (!track) return;
 
-  const dots = [];
-  for (let i = 0; i < TOTAL; i++) {
-    const d = document.createElement('div');
-    d.className = 'bm-dot' + (i === 0 ? ' active' : '');
-    d.addEventListener('click', function() { goTo(i); });
-    dotsEl.appendChild(d);
-    dots.push(d);
+  // ─── Рендер одного слайда ────────────────────────────────
+  function renderSlide(item, isClone) {
+    const imgUrl = item.image_url || '';
+    const title  = escStr(item.title    || '');
+    const sub    = escStr(item.subtitle || '');
+    const price  = item.price ? '₪' + Number(item.price).toFixed(0) : '';
+    const slideEl = document.createElement('div');
+    slideEl.className = 'bm-slide' + (isClone ? ' bm-clone' : '');
+    slideEl.innerHTML = `
+      <div class="bm-card">
+        <div class="bm-card-bg"></div>
+        <div class="bm-bottle-wrap">
+          ${imgUrl
+            ? `<img class="bm-bottle-img" src="${escStr(imgUrl)}" alt="${title}" loading="lazy" />`
+            : `<div class="bm-bottle-placeholder">✦</div>`}
+        </div>
+        <div class="bm-shadow"></div>
+        <div class="bm-info">
+          ${sub   ? `<div class="bm-cat"><span>${sub}</span></div>`   : ''}
+          ${title ? `<div class="bm-name"><span>${title}</span></div>` : ''}
+          ${price ? `<div class="bm-price"><span>${price}</span></div>` : ''}
+        </div>
+      </div>
+    `;
+    return slideEl;
   }
 
-  function applyProgress() {
-    const cw = outer.offsetWidth || 680;
-    const centerOff = (cw - SLIDE_W) / 2;
-    const tx = centerOff - current * SLIDE_W;
-    track.style.transition = 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)';
-    track.style.transform = 'translateX(' + tx + 'px)';
-
-    for (let i = 0; i < TOTAL; i++) {
-      const prog = i - current;
-      const absP = Math.abs(prog);
-      const dur = SPD + 'ms';
-      const isActive = absP === 0;
-
-      cards[i].style.transition = 'transform ' + dur + ', filter ' + dur;
-      cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
-      cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
-
-      // Рамка — только у активной, у остальных opacity 0
-      cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
-      // Фон карточки — скрываем у боковых, виден только у активной
-      if (cardBgs[i]) cardBgs[i].style.opacity = isActive ? '1' : '0';
-      // Градиент внизу и тень — только у активной
-      if (infos[i]) infos[i].style.opacity = isActive ? '1' : '0';
-      if (shadows[i]) shadows[i].style.opacity = isActive ? '1' : '0';
-      cards[i].classList.toggle('bm-active', isActive);
-
-      var imgTx = prog * -80;
-      var imgRot = absP * 15 - 15;
-      const bw = bottleWraps[i];
-      bw.style.transition = 'transform ' + dur;
-      bw.style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
-
-      shadows[i].style.transition = 'transform ' + dur;
-      shadows[i].style.transform = 'translateX(' + (imgTx / 2) + 'px)';
-
-      var textY = absP * 50;
-      [cats[i], names[i], prices[i]].forEach(function(s, si) {
-        if (!s) return;
-        s.style.transition = 'transform ' + dur;
-        s.style.transform = 'translateY(' + (textY * (si + 1)) + 'px)';
-      });
+  // ─── Инициализация карусели после получения данных ───────
+  function initCarousel(items) {
+    if (!items.length) {
+      outer.style.display = 'none';
+      return;
     }
 
-    btnPrev.disabled = current === 0;
-    btnNext.disabled = current === TOTAL - 1;
-    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+    // Очищаем track (убираем placeholder-комментарий)
+    track.innerHTML = '';
+    dotsEl.innerHTML = '';
+
+    const TOTAL = items.length;
+
+    // Бесконечный loop: клонируем последний слайд перед первым и первый после последнего
+    // Это позволяет плавно прыгать при достижении края
+    const cloneLast  = renderSlide(items[TOTAL - 1], true);
+    const cloneFirst = renderSlide(items[0], true);
+
+    track.appendChild(cloneLast);
+    items.forEach(item => track.appendChild(renderSlide(item, false)));
+    track.appendChild(cloneFirst);
+
+    // Реальные слайды начинаются с индекса 1 (после клона последнего)
+    // current — индекс среди ВСЕХ слайдов (включая клоны)
+    let current = 1; // стартуем на первом реальном слайде
+    let isAnimating = false;
+
+    // Ссылки на живые DOM-элементы
+    function getAllSlides()       { return track.querySelectorAll('.bm-slide'); }
+    function getAllCards()        { return track.querySelectorAll('.bm-card'); }
+    function getAllCardBgs()      { return track.querySelectorAll('.bm-card-bg'); }
+    function getAllBottleWraps()  { return track.querySelectorAll('.bm-bottle-wrap'); }
+    function getAllShadows()      { return track.querySelectorAll('.bm-shadow'); }
+    function getAllInfos()        { return track.querySelectorAll('.bm-info'); }
+    function getAllCats()         { return track.querySelectorAll('.bm-cat span'); }
+    function getAllNames()        { return track.querySelectorAll('.bm-name span'); }
+    function getAllPrices()       { return track.querySelectorAll('.bm-price span'); }
+
+    // Точки — только для реальных слайдов
+    const dots = [];
+    for (let i = 0; i < TOTAL; i++) {
+      const d = document.createElement('div');
+      d.className = 'bm-dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', function () { goTo(i + 1); }); // +1 из-за клона в начале
+      dotsEl.appendChild(d);
+      dots.push(d);
+    }
+
+    // ─── applyProgress — применяет позицию без анимации ─────
+    function applyProgress(animated) {
+      const slides = getAllSlides();
+      const cards  = getAllCards();
+      const cardBgs = getAllCardBgs();
+      const bottleWraps = getAllBottleWraps();
+      const shadows = getAllShadows();
+      const infos   = getAllInfos();
+      const cats    = getAllCats();
+      const names   = getAllNames();
+      const prices  = getAllPrices();
+      const STOTAL  = slides.length; // TOTAL + 2 клона
+
+      const cw = outer.offsetWidth || 680;
+      const centerOff = (cw - SLIDE_W) / 2;
+      const tx = centerOff - current * SLIDE_W;
+
+      if (animated) {
+        track.style.transition = 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)';
+      } else {
+        track.style.transition = 'none';
+      }
+      track.style.transform = 'translateX(' + tx + 'px)';
+
+      const dur = SPD + 'ms';
+      for (let i = 0; i < STOTAL; i++) {
+        const prog = i - current;
+        const absP = Math.abs(prog);
+        const isActive = absP === 0;
+
+        if (cards[i]) {
+          cards[i].style.transition = animated ? ('transform ' + dur + ', filter ' + dur) : 'none';
+          cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
+          cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
+          cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
+          cards[i].classList.toggle('bm-active', isActive);
+        }
+        if (cardBgs[i]) cardBgs[i].style.opacity = isActive ? '1' : '0';
+        if (infos[i])   infos[i].style.opacity   = isActive ? '1' : '0';
+        if (shadows[i]) shadows[i].style.opacity  = isActive ? '1' : '0';
+
+        if (bottleWraps[i]) {
+          const imgTx  = prog * -80;
+          const imgRot = absP * 15 - 15;
+          bottleWraps[i].style.transition = animated ? ('transform ' + dur) : 'none';
+          bottleWraps[i].style.transform  = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
+        }
+        if (shadows[i]) {
+          const imgTx = prog * -80;
+          shadows[i].style.transition = animated ? ('transform ' + dur) : 'none';
+          shadows[i].style.transform  = 'translateX(' + (imgTx / 2) + 'px)';
+        }
+
+        const textY = absP * 50;
+        [cats[i], names[i], prices[i]].forEach(function (s, si) {
+          if (!s) return;
+          s.style.transition = animated ? ('transform ' + dur) : 'none';
+          s.style.transform  = 'translateY(' + (textY * (si + 1)) + 'px)';
+        });
+      }
+
+      // Точки — реальный индекс = current - 1 (минус клон-начало), с зацикливанием
+      const realIdx = ((current - 1) % TOTAL + TOTAL) % TOTAL;
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === realIdx); });
+
+      // Кнопки — всегда активны (бесконечный loop)
+      btnPrev.disabled = false;
+      btnNext.disabled = false;
+    }
+
+    // ─── goTo — переход с бесконечным loop ──────────────────
+    function goTo(idx, skipAnimation) {
+      if (isAnimating && !skipAnimation) return;
+      isAnimating = true;
+      current = idx;
+      applyProgress(!skipAnimation);
+
+      setTimeout(function () {
+        // Бесконечный loop: если попали на клон — мгновенно прыгаем на реальный
+        const STOTAL = TOTAL + 2;
+        if (current === 0) {
+          // Попали на клон последнего — прыгаем на последний реальный
+          current = TOTAL;
+          applyProgress(false);
+        } else if (current === STOTAL - 1) {
+          // Попали на клон первого — прыгаем на первый реальный
+          current = 1;
+          applyProgress(false);
+        }
+        isAnimating = false;
+      }, skipAnimation ? 0 : SPD + 20);
+    }
+
+    // Начальная позиция без анимации
+    applyProgress(false);
+
+    // Кнопки
+    btnPrev.addEventListener('click', function () { goTo(current - 1); });
+    btnNext.addEventListener('click', function () { goTo(current + 1); });
+
+    // Свайп
+    var startX = 0;
+    track.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      startX = e.clientX;
+    });
+    track.addEventListener('pointerup', function (e) {
+      var diff = startX - e.clientX;
+      if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+    });
+
+    window.addEventListener('resize', function () { applyProgress(false); });
   }
 
-  function goTo(idx) {
-    current = Math.max(0, Math.min(TOTAL - 1, idx));
-    applyProgress();
-  }
-
-  btnPrev.addEventListener('click', function() { goTo(current - 1); });
-  btnNext.addEventListener('click', function() { goTo(current + 1); });
-
-  var startX = 0;
-  track.addEventListener('pointerdown', function(e) { e.preventDefault(); startX = e.clientX; });
-  track.addEventListener('pointerup', function(e) {
-    var diff = startX - e.clientX;
-    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
-  });
-
-  window.addEventListener('resize', applyProgress);
-  setTimeout(applyProgress, 50);
+  // ─── Загрузка данных из Trinity ──────────────────────────
+  fetch(BESTSELLERS_API)
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var items = (data.bestsellers || []).filter(function (b) { return b.product_id; });
+      initCarousel(items);
+    })
+    .catch(function (err) {
+      console.error('[BM Carousel] Failed to load bestsellers:', err);
+      // Скрываем секцию если нет данных
+      var section = document.getElementById('bestsellers');
+      if (section) section.style.display = 'none';
+    });
 })();

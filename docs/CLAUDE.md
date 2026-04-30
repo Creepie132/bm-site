@@ -437,6 +437,20 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 30.04.2026 (4)
+
+**Commit _pending_ (bm-site)** — fix: carousel text selection on drag
+
+**Проблема:** При перетаскивании карусели бестселлеров браузер выделял текст карточек — стандартное поведение при mouse drag.
+
+**Решение:**
+- `css/style.css` — добавлен `#bmOuter, #bmTrack { user-select: none; -webkit-user-select: none; }` — запрет выделения текста в зоне карусели.
+- `js/main.js` — на `pointerdown` добавлен `e.preventDefault()` — блокирует браузерное drag-behaviour (выделение + drag-image).
+
+**Затронутые файлы:** `css/style.css`, `js/main.js`
+
+---
+
 ### 30.04.2026 (3)
 
 **Commit 7d6aa23 (bm-site)** — fix: carousel side cards — убрана тёмная рамка
