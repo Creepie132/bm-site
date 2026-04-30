@@ -437,6 +437,19 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 30.04.2026
+
+**Commit 7bc8233 (bm-site)** — Bestsellers carousel (CodePen-style)
+
+- `index.html` — секция `#bestsellers` между Магазином и Галереей
+- `css/style.css` — стили карусели: `.bm-card`, `.bm-bottle-wrap`, `.bm-track`, `.bm-nav`, `.bm-dot`
+- `js/main.js` — IIFE с полной механикой `watchSlidesProgress`: флакон вылетает поверх карточки, уезжает с поворотом, текст маскируется, соседние карточки уменьшаются и тускнеют
+- `media/img/eye-cream.png` — Shimmer Eye Cream (PNG с чёрным фоном, mix-blend-mode: screen)
+- `media/img/perfume-margo.png` — Margo Luxury Perfume
+- `media/img/perfume-black.png` — Luxury Collection (чёрный флакон)
+
+
+
 ### 02.04.2026
 
 **Commit b274c82 (bm-site)** — SEO + Image optimization + Cross-sell frontend
