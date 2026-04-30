@@ -297,6 +297,7 @@ function escStr(str) {
   const bottleWraps = track.querySelectorAll('.bm-bottle-wrap');
   const imgs = track.querySelectorAll('.bm-bottle-img');
   const shadows = track.querySelectorAll('.bm-shadow');
+  const infos = track.querySelectorAll('.bm-info');
   const cats = track.querySelectorAll('.bm-cat span');
   const names = track.querySelectorAll('.bm-name span');
   const prices = track.querySelectorAll('.bm-price span');
@@ -353,6 +354,9 @@ function escStr(str) {
       cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
       // Фон карточки — скрываем у боковых, виден только у активной
       if (cardBgs[i]) cardBgs[i].style.opacity = isActive ? '1' : '0';
+      // Градиент внизу и тень — только у активной
+      if (infos[i]) infos[i].style.opacity = isActive ? '1' : '0';
+      if (shadows[i]) shadows[i].style.opacity = isActive ? '1' : '0';
       cards[i].classList.toggle('bm-active', isActive);
 
       var imgTx = prog * -80;
