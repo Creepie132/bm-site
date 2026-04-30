@@ -423,28 +423,31 @@ ul { list-style: none; }
 .bm-carousel-outer { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
 .bm-swiper-wrap { position: relative; height: 480px; overflow: visible; }
 .bm-track { display: flex; align-items: center; will-change: transform; height: 100%; }
-.bm-slide { flex-shrink: 0; width: 260px; display: flex; align-items: center; justify-content: center; padding: 0 12px; }
+.bm-slide {
+  flex-shrink: 0; width: 260px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 12px;
+  position: relative;
+}
 .bm-card {
   position: relative; width: 234px; height: 320px; border-radius: 20px;
   background: transparent;
   border: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
-  filter: brightness(1);
-  transition: filter 700ms;
+  opacity: 1;
+  transition: opacity 700ms, transform 700ms, filter 700ms;
 }
-/* Фон карточки — отдельный слой, управляется opacity */
+/* Фон карточки — отдельный слой */
 .bm-card-bg {
   position: absolute;
   inset: 0;
   border-radius: 20px;
   background: #111;
-  opacity: var(--bm-bg-op, 1);
-  transition: opacity 700ms;
   pointer-events: none;
   z-index: 0;
 }
-/* Псевдо-рамка через ::before — не обрезается overflow, анимируется через opacity */
+/* Псевдо-рамка через ::before */
 .bm-card::before {
   content: '';
   position: absolute;
@@ -457,16 +460,17 @@ ul { list-style: none; }
   pointer-events: none;
   z-index: 10;
 }
-/* Активная карточка — усиленный glow */
 .bm-card.bm-active::before {
   border-color: rgba(201,168,76,0.6);
   box-shadow: 0 0 32px rgba(201,168,76,0.18), 0 0 8px rgba(201,168,76,0.10);
 }
-.bm-card:active { cursor: grabbing; }
+/* Флакон — позиционируется относительно .bm-slide, независимо от карточки */
 .bm-bottle-wrap {
   position: absolute; top: -70px; width: 130%; left: -15%;
-  display: flex; justify-content: center; z-index: 2; pointer-events: none;
+  display: flex; justify-content: center; z-index: 20; pointer-events: none;
+  transition: transform 700ms, filter 700ms;
 }
+.bm-card:active { cursor: grabbing; }
 .bm-bottle-img { width: 100%; display: block; user-select: none; }
 /* PNG с чёрным фоном — mix-blend-mode screen убирает чёрный */
 .bm-bottle-img.bm-blend { mix-blend-mode: screen; }

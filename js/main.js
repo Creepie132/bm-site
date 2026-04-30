@@ -294,6 +294,7 @@ function escStr(str) {
   const slides = track.querySelectorAll('.bm-slide');
   const cards = track.querySelectorAll('.bm-card');
   const cardBgs = track.querySelectorAll('.bm-card-bg');
+  const bottleWraps = track.querySelectorAll('.bm-bottle-wrap');
   const imgs = track.querySelectorAll('.bm-bottle-img');
   const shadows = track.querySelectorAll('.bm-shadow');
   const cats = track.querySelectorAll('.bm-cat span');
@@ -343,40 +344,45 @@ function escStr(str) {
       const absP = Math.abs(prog);
       const dur = SPD + 'ms';
 
-      cards[i].style.transition = 'transform ' + dur + ', filter ' + dur;
-      imgs[i].style.transition = 'transform ' + dur;
+      // Флакон анимируется всегда независимо
+      bottleWraps[i].style.transition = 'transform ' + dur + ', filter ' + dur;
       shadows[i].style.transition = 'transform ' + dur;
       [cats[i], names[i], prices[i]].forEach(function(s) {
         if (s) s.style.transition = 'transform ' + dur;
       });
 
-      if (absP > 1.5) {
-        cards[i].style.transform = 'scale(0.7)';
-        cards[i].style.filter = 'brightness(0.08)';
-        cards[i].style.setProperty('--bm-border-op', '0');
-        cards[i].style.setProperty('--bm-bg-op', '0');
+      // Флакон: смещение и поворот
+      var imgTx = prog * -80;
+      var imgRot = absP * 15 - 15;
+      bottleWraps[i].style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
+      shadows[i].style.transform = 'translateX(' + (imgTx / 2) + 'px)';
+
+      if (absP >= 1) {
+        // Боковые: карточка полностью скрыта, флакон затемнён
+        cards[i].style.transition = 'opacity ' + dur + ', transform ' + dur;
+        cards[i].style.opacity = '0';
+        cards[i].style.transform = 'scale(' + (1 - absP * 0.15) + ')';
+        bottleWraps[i].style.filter = 'brightness(0.35)';
         cards[i].classList.remove('bm-active');
+        cards[i].style.setProperty('--bm-border-op', '0');
+
+        var textY = absP * 50;
+        [cats[i], names[i], prices[i]].forEach(function(s, si) {
+          if (s) s.style.transform = 'translateY(' + (textY * (si + 1)) + 'px)';
+        });
         continue;
       }
 
-      cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
-      cards[i].style.filter = absP >= 1 ? 'brightness(0.5)' : 'brightness(1)';
-      // фон карточки исчезает у задних — остаётся только флакон
-      var bgOp = absP >= 1 ? '0' : '1';
-      cards[i].style.setProperty('--bm-bg-op', bgOp);
-      // рамка только у активной
-      var borderOp = absP >= 1 ? '0' : String(1 - absP * 0.5);
-      cards[i].style.setProperty('--bm-border-op', borderOp);
-      cards[i].classList.toggle('bm-active', absP === 0);
+      // Активная карточка
+      cards[i].style.transition = 'opacity ' + dur + ', transform ' + dur;
+      cards[i].style.opacity = '1';
+      cards[i].style.transform = 'scale(1)';
+      bottleWraps[i].style.filter = 'brightness(1)';
+      cards[i].classList.add('bm-active');
+      cards[i].style.setProperty('--bm-border-op', '1');
 
-      var imgTx = prog * -80;
-      var imgRot = absP * 15 - 15;
-      imgs[i].style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
-      shadows[i].style.transform = 'translateX(' + (imgTx / 2) + 'px)';
-
-      var textY = absP * 50;
-      [cats[i], names[i], prices[i]].forEach(function(s, si) {
-        if (s) s.style.transform = 'translateY(' + (textY * (si + 1)) + 'px)';
+      [cats[i], names[i], prices[i]].forEach(function(s) {
+        if (s) s.style.transform = 'translateY(0)';
       });
     }
 
