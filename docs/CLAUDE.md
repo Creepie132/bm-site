@@ -439,6 +439,12 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ### 30.04.2026
 
+**Commit 0a92bc8 (bm-site)** — fix: carousel dark cards + eye-cream image
+
+- `css/style.css` — `.bm-card` переключён с `opacity` на `filter: brightness()`. Задние карточки теперь затемняются через `brightness(0.35/0.08)` а не `opacity(0.4)` — карточка остаётся непрозрачной, тёмный фон страницы больше не просвечивает сквозь неё. Добавлен `.bm-bottle-img.bm-blend { mix-blend-mode: screen }` для PNG с чёрным фоном. `bm-bottle-wrap top` поднят с `-35px` до `-70px`, высота секции увеличена до 480px.
+- `js/main.js` — transition карточки изменён с `opacity` на `filter`, логика `applyProgress` обновлена под `brightness`.
+- `index.html` — `eye-cream.png` получил класс `bm-blend` для корректного `mix-blend-mode: screen`.
+
 **Commit 7bc8233 (bm-site)** — Bestsellers carousel (CodePen-style)
 
 - `index.html` — секция `#bestsellers` между Магазином и Галереей
