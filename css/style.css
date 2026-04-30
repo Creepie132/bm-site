@@ -426,12 +426,23 @@ ul { list-style: none; }
 .bm-slide { flex-shrink: 0; width: 260px; display: flex; align-items: center; justify-content: center; padding: 0 12px; }
 .bm-card {
   position: relative; width: 234px; height: 320px; border-radius: 20px;
-  background: #111;
+  background: transparent;
   border: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
   filter: brightness(1);
   transition: filter 700ms;
+}
+/* Фон карточки — отдельный слой, управляется opacity */
+.bm-card-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: #111;
+  opacity: var(--bm-bg-op, 1);
+  transition: opacity 700ms;
+  pointer-events: none;
+  z-index: 0;
 }
 /* Псевдо-рамка через ::before — не обрезается overflow, анимируется через opacity */
 .bm-card::before {
@@ -440,7 +451,7 @@ ul { list-style: none; }
   inset: 0;
   border-radius: 20px;
   border: 1px solid rgba(201,168,76,0.45);
-  box-shadow: 0 0 24px rgba(201,168,76,0.08), inset 0 0 0 0 transparent;
+  box-shadow: 0 0 24px rgba(201,168,76,0.08);
   opacity: var(--bm-border-op, 0);
   transition: opacity 700ms, box-shadow 700ms;
   pointer-events: none;

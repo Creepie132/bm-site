@@ -293,6 +293,7 @@ function escStr(str) {
 
   const slides = track.querySelectorAll('.bm-slide');
   const cards = track.querySelectorAll('.bm-card');
+  const cardBgs = track.querySelectorAll('.bm-card-bg');
   const imgs = track.querySelectorAll('.bm-bottle-img');
   const shadows = track.querySelectorAll('.bm-shadow');
   const cats = track.querySelectorAll('.bm-cat span');
@@ -353,13 +354,17 @@ function escStr(str) {
         cards[i].style.transform = 'scale(0.7)';
         cards[i].style.filter = 'brightness(0.08)';
         cards[i].style.setProperty('--bm-border-op', '0');
+        cards[i].style.setProperty('--bm-bg-op', '0');
         cards[i].classList.remove('bm-active');
         continue;
       }
 
       cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
-      cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
-      // ::before управляется через CSS-переменную — нет артефактов обрезки
+      cards[i].style.filter = absP >= 1 ? 'brightness(0.5)' : 'brightness(1)';
+      // фон карточки исчезает у задних — остаётся только флакон
+      var bgOp = absP >= 1 ? '0' : '1';
+      cards[i].style.setProperty('--bm-bg-op', bgOp);
+      // рамка только у активной
       var borderOp = absP >= 1 ? '0' : String(1 - absP * 0.5);
       cards[i].style.setProperty('--bm-border-op', borderOp);
       cards[i].classList.toggle('bm-active', absP === 0);
