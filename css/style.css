@@ -453,6 +453,7 @@ ul { list-style: none; }
   pointer-events: none; z-index: 10;
 }
 .bm-card:active { cursor: grabbing; }
+#bmOuter, #bmTrack { user-select: none; -webkit-user-select: none; }
 .bm-bottle-wrap {
   position: absolute; top: -70px; width: 130%; left: -15%;
   display: flex; justify-content: center; z-index: 2; pointer-events: none;

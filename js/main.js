@@ -390,7 +390,7 @@ function escStr(str) {
   btnNext.addEventListener('click', function() { goTo(current + 1); });
 
   var startX = 0;
-  track.addEventListener('pointerdown', function(e) { startX = e.clientX; });
+  track.addEventListener('pointerdown', function(e) { e.preventDefault(); startX = e.clientX; });
   track.addEventListener('pointerup', function(e) {
     var diff = startX - e.clientX;
     if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
