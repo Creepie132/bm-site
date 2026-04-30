@@ -280,3 +280,97 @@ function escStr(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
+
+
+/* ── BESTSELLERS CAROUSEL ── */
+(function() {
+  const track = document.getElementById('bmTrack');
+  const outer = document.getElementById('bmOuter');
+  const btnPrev = document.getElementById('bmPrev');
+  const btnNext = document.getElementById('bmNext');
+  const dotsEl = document.getElementById('bmDots');
+  if (!track) return;
+
+  const slides = track.querySelectorAll('.bm-slide');
+  const cards = track.querySelectorAll('.bm-card');
+  const imgs = track.querySelectorAll('.bm-bottle-img');
+  const shadows = track.querySelectorAll('.bm-shadow');
+  const cats = track.querySelectorAll('.bm-cat span');
+  const names = track.querySelectorAll('.bm-name span');
+  const prices = track.querySelectorAll('.bm-price span');
+  const TOTAL = slides.length;
+  const SLIDE_W = 260;
+  const SPD = 700;
+  let current = 0;
+
+  const dots = [];
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'bm-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', function() { goTo(i); });
+    dotsEl.appendChild(d);
+    dots.push(d);
+  }
+
+  function applyProgress() {
+    const cw = outer.offsetWidth || 680;
+    const centerOff = (cw - SLIDE_W) / 2;
+    const tx = centerOff - current * SLIDE_W;
+    track.style.transition = 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)';
+    track.style.transform = 'translateX(' + tx + 'px)';
+
+    for (let i = 0; i < TOTAL; i++) {
+      const prog = i - current;
+      const absP = Math.abs(prog);
+      const dur = SPD + 'ms';
+
+      cards[i].style.transition = 'transform ' + dur + ', opacity ' + dur;
+      imgs[i].style.transition = 'transform ' + dur;
+      shadows[i].style.transition = 'transform ' + dur;
+      [cats[i], names[i], prices[i]].forEach(function(s) {
+        if (s) s.style.transition = 'transform ' + dur;
+      });
+
+      if (absP > 1.5) {
+        cards[i].style.transform = 'scale(0.7)';
+        cards[i].style.opacity = '0.05';
+        continue;
+      }
+
+      cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
+      cards[i].style.opacity = absP >= 1 ? '0.4' : '1';
+
+      var imgTx = prog * -80;
+      var imgRot = absP * 15 - 15;
+      imgs[i].style.transform = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
+      shadows[i].style.transform = 'translateX(' + (imgTx / 2) + 'px)';
+
+      var textY = absP * 50;
+      [cats[i], names[i], prices[i]].forEach(function(s, si) {
+        if (s) s.style.transform = 'translateY(' + (textY * (si + 1)) + 'px)';
+      });
+    }
+
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+  }
+
+  function goTo(idx) {
+    current = Math.max(0, Math.min(TOTAL - 1, idx));
+    applyProgress();
+  }
+
+  btnPrev.addEventListener('click', function() { goTo(current - 1); });
+  btnNext.addEventListener('click', function() { goTo(current + 1); });
+
+  var startX = 0;
+  track.addEventListener('pointerdown', function(e) { startX = e.clientX; });
+  track.addEventListener('pointerup', function(e) {
+    var diff = startX - e.clientX;
+    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+  });
+
+  window.addEventListener('resize', applyProgress);
+  setTimeout(applyProgress, 50);
+})();

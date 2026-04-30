@@ -1,4 +1,5 @@
 @echo off
+cd /d F:\Amber_solutions_Kira\bm_site
 git add .
-git commit -m "fix: shop page full redesign - elegant dark gold style"
+git commit -m "feat: bestsellers carousel with product bottles (CodePen-style)"
 git push origin main
