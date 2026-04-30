@@ -435,11 +435,12 @@ ul { list-style: none; }
   overflow: visible; cursor: grab;
   transition: transform 700ms, filter 700ms;
 }
-/* Фон карточки — всегда виден */
+/* Фон карточки — скрыт по умолчанию, JS показывает только у активной */
 .bm-card-bg {
   position: absolute; inset: 0; border-radius: 20px;
   background: #111;
   pointer-events: none; z-index: 0;
+  opacity: 0;
   transition: opacity 700ms;
 }
 /* Рамка — только у активной карточки */
