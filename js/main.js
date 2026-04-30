@@ -351,6 +351,8 @@ function escStr(str) {
 
       // Рамка — только у активной, у остальных opacity 0
       cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
+      // Фон карточки — скрываем у боковых, виден только у активной
+      if (cardBgs[i]) cardBgs[i].style.opacity = isActive ? '1' : '0';
       cards[i].classList.toggle('bm-active', isActive);
 
       var imgTx = prog * -80;

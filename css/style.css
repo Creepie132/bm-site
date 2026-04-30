@@ -430,7 +430,7 @@ ul { list-style: none; }
 }
 .bm-card {
   position: relative; width: 234px; height: 320px; border-radius: 20px;
-  background: #111; border: none;
+  background: transparent; border: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
   transition: transform 700ms, filter 700ms;
@@ -440,6 +440,7 @@ ul { list-style: none; }
   position: absolute; inset: 0; border-radius: 20px;
   background: #111;
   pointer-events: none; z-index: 0;
+  transition: opacity 700ms;
 }
 /* Рамка — только у активной карточки */
 .bm-card::before {
