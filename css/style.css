@@ -434,17 +434,18 @@ ul { list-style: none; }
 .bm-card:active { cursor: grabbing; }
 .bm-bottle-wrap {
   position: absolute; top: -35px; width: 140%; left: -20%;
-  display: flex; justify-content: center; z-index: 9; pointer-events: none;
+  display: flex; justify-content: center; z-index: 2; pointer-events: none;
 }
 .bm-bottle-img { width: 100%; display: block; user-select: none; mix-blend-mode: screen; }
 .bm-shadow {
   position: absolute; bottom: 88px; left: 50%; transform: translateX(-50%);
   width: 90px; height: 14px; border-radius: 50%;
-  background: rgba(0,0,0,0.55); filter: blur(9px); z-index: 8;
+  background: rgba(0,0,0,0.55); filter: blur(9px); z-index: 3;
 }
 .bm-info {
   position: absolute; bottom: 0; left: 0; right: 0; padding: 22px 18px;
   background: linear-gradient(to top, rgba(10,8,2,0.98) 60%, transparent);
+  z-index: 9;
 }
 .bm-cat { overflow: hidden; margin-bottom: 4px; }
 .bm-cat span { display: inline-flex; font-size: 8px; letter-spacing: 2.5px; color: #c9a84c; text-transform: uppercase; font-weight: 500; }

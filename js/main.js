@@ -303,6 +303,24 @@ function escStr(str) {
   const SPD = 700;
   let current = 0;
 
+  // Загрузка цен из Trinity API по имени товара
+  fetch('https://ambersol.co.il/api/beautymania/products')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var products = data.products || data || [];
+      names.forEach(function(nameEl, i) {
+        var cardName = nameEl.textContent.trim().toLowerCase();
+        var match = products.find(function(p) {
+          return p.name && p.name.trim().toLowerCase().indexOf(cardName) !== -1
+              || cardName.indexOf((p.name || '').trim().toLowerCase()) !== -1;
+        });
+        if (match && match.sell_price) {
+          prices[i].textContent = '₪' + Number(match.sell_price).toFixed(0);
+        }
+      });
+    })
+    .catch(function() {}); // тихо — цены просто не обновятся
+
   const dots = [];
   for (let i = 0; i < TOTAL; i++) {
     const d = document.createElement('div');
