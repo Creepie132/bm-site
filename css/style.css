@@ -457,7 +457,7 @@ ul { list-style: none; }
   position: absolute; top: -70px; width: 130%; left: -15%;
   display: flex; justify-content: center; z-index: 2; pointer-events: none;
 }
-.bm-bottle-img { width: 100%; display: block; user-select: none; }
+.bm-bottle-img { width: 100%; display: block; user-select: none; mix-blend-mode: screen; }
 /* PNG с чёрным фоном — mix-blend-mode screen убирает чёрный */
 .bm-bottle-img.bm-blend { mix-blend-mode: screen; }
 .bm-shadow {
