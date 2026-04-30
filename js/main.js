@@ -342,7 +342,7 @@ function escStr(str) {
       const absP = Math.abs(prog);
       const dur = SPD + 'ms';
 
-      cards[i].style.transition = 'transform ' + dur + ', filter ' + dur;
+      cards[i].style.transition = 'transform ' + dur + ', filter ' + dur + ', border-color ' + dur;
       imgs[i].style.transition = 'transform ' + dur;
       shadows[i].style.transition = 'transform ' + dur;
       [cats[i], names[i], prices[i]].forEach(function(s) {
@@ -352,12 +352,16 @@ function escStr(str) {
       if (absP > 1.5) {
         cards[i].style.transform = 'scale(0.7)';
         cards[i].style.filter = 'brightness(0.08)';
+        cards[i].style.borderColor = 'rgba(201,168,76,0)';
         continue;
       }
 
       cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
-      // brightness вместо opacity — карточка не просвечивает, просто темнеет
       cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
+      // рамка плавно исчезает у задних карточек
+      cards[i].style.borderColor = absP >= 1
+        ? 'rgba(201,168,76,0)'
+        : 'rgba(201,168,76,0.2)';
 
       var imgTx = prog * -80;
       var imgRot = absP * 15 - 15;

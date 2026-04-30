@@ -426,12 +426,14 @@ ul { list-style: none; }
 .bm-slide { flex-shrink: 0; width: 260px; display: flex; align-items: center; justify-content: center; padding: 0 12px; }
 .bm-card {
   position: relative; width: 234px; height: 320px; border-radius: 20px;
-  background: linear-gradient(155deg, #1c1408 0%, #261a06 100%);
+  /* нейтральный тёмный фон — без коричневого оттенка, чтобы фото с прозрачным фоном не желтели */
+  background: #111;
   border: 1px solid rgba(201,168,76,0.2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
-  /* brightness вместо opacity: карточка остаётся непрозрачной, просто темнеет */
   filter: brightness(1);
+  /* плавный переход border-color вместе с filter */
+  transition: filter 700ms, border-color 700ms;
 }
 .bm-card:active { cursor: grabbing; }
 .bm-bottle-wrap {
@@ -448,6 +450,8 @@ ul { list-style: none; }
 }
 .bm-info {
   position: absolute; bottom: 0; left: 0; right: 0; padding: 22px 18px;
+  /* закруглённые нижние углы совпадают с border-radius карточки */
+  border-radius: 0 0 20px 20px;
   background: linear-gradient(to top, rgba(10,8,2,0.98) 60%, transparent);
   z-index: 9;
 }
