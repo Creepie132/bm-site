@@ -421,7 +421,7 @@ ul { list-style: none; }
 /* ── BESTSELLERS CAROUSEL ── */
 .bm-carousel-section { background: #0a0a0a; overflow: hidden; }
 .bm-carousel-outer { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
-.bm-swiper-wrap { position: relative; height: 420px; overflow: visible; }
+.bm-swiper-wrap { position: relative; height: 480px; overflow: visible; }
 .bm-track { display: flex; align-items: center; will-change: transform; height: 100%; }
 .bm-slide { flex-shrink: 0; width: 260px; display: flex; align-items: center; justify-content: center; padding: 0 12px; }
 .bm-card {
@@ -430,13 +430,17 @@ ul { list-style: none; }
   border: 1px solid rgba(201,168,76,0.2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   overflow: visible; cursor: grab;
+  /* brightness вместо opacity: карточка остаётся непрозрачной, просто темнеет */
+  filter: brightness(1);
 }
 .bm-card:active { cursor: grabbing; }
 .bm-bottle-wrap {
-  position: absolute; top: -35px; width: 140%; left: -20%;
+  position: absolute; top: -70px; width: 130%; left: -15%;
   display: flex; justify-content: center; z-index: 2; pointer-events: none;
 }
 .bm-bottle-img { width: 100%; display: block; user-select: none; }
+/* PNG с чёрным фоном — mix-blend-mode screen убирает чёрный */
+.bm-bottle-img.bm-blend { mix-blend-mode: screen; }
 .bm-shadow {
   position: absolute; bottom: 88px; left: 50%; transform: translateX(-50%);
   width: 90px; height: 14px; border-radius: 50%;
@@ -471,5 +475,5 @@ ul { list-style: none; }
 @media (max-width: 768px) {
   .bm-slide { width: 220px; }
   .bm-card { width: 196px; height: 290px; }
-  .bm-swiper-wrap { height: 380px; }
+  .bm-swiper-wrap { height: 420px; }
 }
