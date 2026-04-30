@@ -437,6 +437,18 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 30.04.2026 (2)
+
+**Commit 181807e (bm-site)** — fix: carousel border via ::before pseudo-element with glow
+
+**Проблема:** Боковые карточки карусели отображали рамку как обрезанный артефакт — `border` обрезался краем вьюпорта и выглядел некрасиво.
+
+**Решение (вариант 3 — pseudo-element):**
+- `css/style.css` — убран `border` с `.bm-card`. Добавлен `::before` псевдоэлемент с `inset: 0`, `border-radius: 20px`, `border: 1px solid rgba(201,168,76,0.45)`, `opacity: var(--bm-border-op, 0)`, `pointer-events: none`. Класс `.bm-card.bm-active::before` даёт усиленный золотой `box-shadow` (glow).
+- `js/main.js` — в `applyProgress`: убран `borderColor` из inline-стилей. Рамка управляется через `cards[i].style.setProperty('--bm-border-op', ...)`: `1` для активной, `0` для задних. Класс `bm-active` добавляется/убирается через `classList.toggle`.
+
+**Эффект:** рамка у боковых карточек плавно исчезает без артефактов обрезки; у активной — тонкая золотая рамка + мягкое свечение.
+
 ### 30.04.2026
 
 **Commit e3e57b5 (bm-site)** — fix carousel: border fade, rounded corners, yellow tint
