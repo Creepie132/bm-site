@@ -537,6 +537,23 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 **Commit a299f01 (trinity)** — CORS fix, product_name из БД, env vars
 
+### 30.04.2026 (5)
+
+**Commit 5cdbf3a (bm-site)** — fix: carousel полностью связан с Trinity CRM
+
+**Система бестселлеров (Вариант Б):**
+- Таблица `site_bestsellers` (5 слотов) — уже была в БД с реальными товарами
+- API `GET /api/beautymania/bestsellers` — отдаёт нормализованные данные сайту (custom_title/image_url перекрывают данные товара)
+- API `GET /PUT /api/beautymania/admin/bestsellers` — редактор Trinity (auth-protected, только BM org)
+- UI редактор: `/settings/bestsellers` в Trinity — выбор товара из picker, кастомный заголовок/подпись, вкл/выкл слот, кнопка "Сохранить и опубликовать"
+- `js/main.js` — карусель полностью динамическая, рендерит из API. Бесконечный loop через клоны первого/последнего слайда
+- `index.html` — статичные слайды карусели убраны, остался только `<div id="bmTrack">` для JS
+- **Фикс фильтра:** фильтр `b.image_url || b.title` заменён на `b.product_id` — слоты с `image_url=null` теперь отображаются (берут image_url товара через JOIN)
+
+**Затронутые файлы:** `js/main.js`, `index.html`, `docs/CLAUDE.md`
+
+---
+
 **Commit 95e17ea (trinity)** — Stock decrement, WA клиенту, статусы заказа
 
 **Commit 21b08ab (trinity)** — Полный UI цикла заказов, webhook products-updated
