@@ -312,11 +312,11 @@ function escStr(str) {
             : `<div class="bm-bottle-placeholder">✦</div>`}
         </div>
         <div class="bm-shadow"></div>
-        <div class="bm-info">
-          ${sub   ? `<div class="bm-cat"><span>${sub}</span></div>`   : ''}
-          ${title ? `<div class="bm-name"><span>${title}</span></div>` : ''}
-          ${price ? `<div class="bm-price"><span>${price}</span></div>` : ''}
-        </div>
+      </div>
+      <div class="bm-info">
+        ${sub   ? `<div class="bm-cat"><span>${sub}</span></div>`   : ''}
+        ${title ? `<div class="bm-name"><span>${title}</span></div>` : ''}
+        ${price ? `<div class="bm-price"><span>${price}</span></div>` : ''}
       </div>
     `;
     return slideEl;
@@ -424,10 +424,10 @@ function escStr(str) {
         }
 
         const textY = absP * 50;
-        [cats[i], names[i], prices[i]].forEach(function (s, si) {
+        [cats[i], names[i], prices[i]].forEach(function (s) {
           if (!s) return;
           s.style.transition = animated ? ('transform ' + dur) : 'none';
-          s.style.transform  = 'translateY(' + (textY * (si + 1)) + 'px)';
+          s.style.transform  = 'translateY(0)';
         });
       }
 

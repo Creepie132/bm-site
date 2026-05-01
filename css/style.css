@@ -421,11 +421,11 @@ ul { list-style: none; }
 /* ── BESTSELLERS CAROUSEL ── */
 .bm-carousel-section { background: #0a0a0a; overflow: hidden; }
 .bm-carousel-outer { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
-.bm-swiper-wrap { position: relative; height: 480px; overflow: visible; }
-.bm-track { display: flex; align-items: center; will-change: transform; height: 100%; }
+.bm-swiper-wrap { position: relative; height: 520px; overflow: visible; }
+.bm-track { display: flex; align-items: flex-start; padding-top: 70px; will-change: transform; height: 100%; }
 .bm-slide {
   flex-shrink: 0; width: 260px;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
   padding: 0 12px;
 }
 .bm-card {
@@ -468,10 +468,8 @@ ul { list-style: none; }
   transition: opacity 700ms;
 }
 .bm-info {
-  position: absolute; bottom: 0; left: 0; right: 0; padding: 22px 18px;
-  border-radius: 0 0 20px 20px;
-  background: linear-gradient(to top, rgba(10,8,2,0.98) 60%, transparent);
-  z-index: 9;
+  width: 100%; padding: 14px 4px 0;
+  text-align: center;
   transition: opacity 700ms;
 }
 .bm-cat { overflow: hidden; margin-bottom: 4px; }
