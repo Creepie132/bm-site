@@ -437,6 +437,25 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 01.05.2026
+
+**Commit 48dc05b (bm-site)** — fix: bestsellers text moved below card for readability
+
+**Проблема:** Название товара и цена (`bm-info`) рендерились поверх изображения флакона внутри карточки — текст сливался с картинкой и плохо читался.
+
+**Решение:**
+- `js/main.js` — `.bm-info` вынесен из `<div class="bm-card">` наружу — теперь рендерится как следующий элемент внутри `.bm-slide`, ниже карточки.
+- `css/style.css` — `.bm-info`: убран `position: absolute`, фоновый градиент, `border-radius`. Стал обычным блоком с `padding-top: 14px; text-align: center`.
+- `css/style.css` — `.bm-slide`: добавлен `flex-direction: column; align-items: center; justify-content: flex-start` — слайд теперь вертикальный столбец.
+- `css/style.css` — `.bm-swiper-wrap`: высота увеличена 480→520px. `.bm-track`: `align-items: flex-start; padding-top: 70px` — оставляет место для флаконов вылетающих сверху.
+- `js/main.js` — убран `translateY` эффект для текстовых span (был нужен когда текст маскировался внутри карточки, теперь не актуален).
+
+**Эффект:** текст чётко читается на чёрном фоне страницы (#0a0a0a), не конкурирует с изображением.
+
+**Затронутые файлы:** `js/main.js`, `css/style.css`
+
+---
+
 ### 30.04.2026 (4)
 
 **Commit _pending_ (bm-site)** — fix: carousel text selection on drag
