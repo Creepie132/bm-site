@@ -444,6 +444,23 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 07.05.2026
+
+**Commit 216bb32 (bm-site)** — feat: lang switcher always visible on mobile nav bar
+
+**Проблема:** Селектор языков RU/HE на мобильной версии был виден только внутри открытого бургер-меню — пользователь не мог переключить язык без открытия меню.
+
+**Решение:**
+- `index.html` — добавлен `<div class="lang-switcher lang-switcher--nav-mobile">` между десктопным switcher и кнопкой бургера, внутри `.nav__inner`. Всегда присутствует в DOM, виден в nav-баре.
+- `css/lang.css` — новый класс `.lang-switcher--nav-mobile`: `display: none` на десктопе, `display: flex` при `max-width: 768px`. Обновлена медиа-директива `:not()` чтобы не скрывать новый элемент. RTL override для HE: `flex-direction: row-reverse` + смена margin.
+- `js/main.js` — без изменений: `querySelectorAll('.lang-btn')` уже захватывает все копии кнопок.
+
+**Результат:** На мобиле nav-бар выглядит как `[Logo] ... [RU / HE] [☰]` — переключатель языка всегда доступен без открытия меню.
+
+**Затронутые файлы:** `index.html`, `css/lang.css`
+
+---
+
 ### 01.05.2026
 
 **Commit 48dc05b (bm-site)** — fix: bestsellers text moved below card for readability
