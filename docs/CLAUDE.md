@@ -444,6 +444,26 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ## 18. История изменений
 
+### 07.05.2026 (3)
+
+**Commit 3b6d49e (bm-site)** — fix: carousel layout — direction ltr, clientWidth, rAF
+
+**Проблема:** Карусель бестселлеров отображалась некорректно — первая карточка обрезалась слева, флаконы "парили" без фона.
+
+**Причины:**
+1. `.bm-track` наследовал `direction: rtl` от `html[data-lang="he"]` — translateX работал в обратную сторону
+2. `.bm-swiper-wrap` не имел явного `width: 100%` — `offsetWidth` мог возвращать некорректное значение
+3. `applyProgress(false)` вызывался до завершения layout после DOM-вставки слайдов (fetch асинхронный)
+4. `offsetWidth` включает border — `clientWidth` точнее для вычисления центра
+
+**Решение:**
+- `css/style.css` — `.bm-swiper-wrap`: добавлен `width: 100%`; `.bm-track`: добавлен `direction: ltr` (изолирует карусель от RTL страницы)
+- `js/main.js` — `offsetWidth` → `clientWidth`; защита `if (cw < SLIDE_W) cw = SLIDE_W`; первый `applyProgress` обёрнут в `requestAnimationFrame` для гарантии актуального layout
+
+**Затронутые файлы:** `css/style.css`, `js/main.js`
+
+---
+
 ### 07.05.2026 (2)
 
 **Commit b04e4bc (bm-site)** — fix: carousel circular buffer — полный набор клонов
