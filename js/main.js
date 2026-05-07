@@ -527,6 +527,55 @@ function escStr(str) {
       })(di);
     }
 
+    // ─── Статичная инфо-панель (мобайл) ────────────────────────
+    var staticInner = document.getElementById('bmStaticInner');
+    var staticCat   = document.getElementById('bmStaticCat');
+    var staticName  = document.getElementById('bmStaticName');
+    var staticPrice = document.getElementById('bmStaticPrice');
+    var staticBuy   = document.getElementById('bmStaticBuy');
+    var staticFading = false;
+
+    function updateStaticInfo(item, animated) {
+      if (!staticInner) return;
+      if (!animated) {
+        // первоначальная инициализация — без анимации
+        staticCat.textContent   = item.subtitle || '';
+        staticName.textContent  = item.title    || '';
+        staticPrice.textContent = item.price ? '₪' + Number(item.price).toFixed(0) : '';
+        if (staticBuy) staticBuy.dataset.id = item.product_id || '';
+        return;
+      }
+      // Fade out → смена данных → fade in
+      staticInner.classList.add('fading');
+      setTimeout(function() {
+        staticCat.textContent   = item.subtitle || '';
+        staticName.textContent  = item.title    || '';
+        staticPrice.textContent = item.price ? '₪' + Number(item.price).toFixed(0) : '';
+        if (staticBuy) staticBuy.dataset.id = item.product_id || '';
+        staticInner.classList.remove('fading');
+      }, 300);
+    }
+
+    // Кнопка "Купить" в статичной панели
+    if (staticBuy) {
+      staticBuy.addEventListener('click', function() {
+        var pid     = staticBuy.dataset.id;
+        var title   = staticName.textContent || '';
+        var price   = parseFloat((staticPrice.textContent || '').replace(/[^\d.]/g, '')) || 0;
+        if (!pid) return;
+        try {
+          var cart = JSON.parse(localStorage.getItem('bm_cart') || '[]');
+          var existing = cart.find(function(i) { return i.id === pid; });
+          if (existing) { existing.qty = Math.min(99, existing.qty + 1); }
+          else { cart.push({ id: pid, name: title, price: price, image_url: null, qty: 1 }); }
+          localStorage.setItem('bm_cart', JSON.stringify(cart));
+        } catch(_) {}
+        staticBuy.classList.add('bm-buy-btn--added');
+        setTimeout(function() { staticBuy.classList.remove('bm-buy-btn--added'); }, 1200);
+        setTimeout(function() { window.location.href = '/shop'; }, 650);
+      });
+    }
+
     function applyProgress(animated) {
       var cards       = track.querySelectorAll('.bm-card');
       var cardBgs     = track.querySelectorAll('.bm-card-bg');
@@ -581,6 +630,11 @@ function escStr(str) {
       dots.forEach(function(d, i) { d.classList.toggle('active', i === realIdx); });
       btnPrev.disabled = false;
       btnNext.disabled = false;
+
+      // Обновляем статичную панель на мобайле
+      if (items[realIdx]) {
+        updateStaticInfo(items[realIdx], animated);
+      }
     }
 
     function goTo(idx, skipAnimation) {

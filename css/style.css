@@ -419,7 +419,7 @@ ul { list-style: none; }
 
 
 /* ── BESTSELLERS CAROUSEL ── */
-.bm-carousel-section { background: #0a0a0a; overflow: hidden; }
+.bm-carousel-section { background: #0a0a0a; }
 .bm-carousel-outer { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 1rem; }
 .bm-swiper-wrap { position: relative; width: 100%; height: 520px; overflow: visible; }
 .bm-track { display: flex; align-items: flex-start; padding-top: 70px; will-change: transform; height: 100%; direction: ltr; }
@@ -523,8 +523,85 @@ ul { list-style: none; }
   color: #e8c97a;
   transform: scale(0.96);
 }
+/* ── Статичная инфо-панель под каруселью (только мобайл) ── */
+.bm-static-info {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 1.5rem 0;
+  min-height: 90px;
+}
+.bm-static-info__inner {
+  width: 100%;
+  transition: opacity 0.3s ease;
+}
+.bm-static-info__inner.fading {
+  opacity: 0;
+}
+.bm-static-cat {
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  color: #c9a84c;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.bm-static-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: #f5e6c8;
+  font-weight: 600;
+  margin-bottom: 5px;
+  line-height: 1.25;
+}
+.bm-static-price {
+  font-size: 13px;
+  color: #c9a84c;
+  font-weight: 500;
+  margin-bottom: 14px;
+}
+.bm-static-buy {
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.7);
+  color: #c9a84c;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 10px 32px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
+}
+.bm-static-buy:hover {
+  background: rgba(201,168,76,0.12);
+  border-color: #c9a84c;
+  color: #e8c97a;
+}
+.bm-static-buy.bm-buy-btn--added {
+  background: rgba(201,168,76,0.25);
+  border-color: #e8c97a;
+  color: #e8c97a;
+  transform: scale(0.96);
+}
+
 @media (max-width: 768px) {
   .bm-slide { width: 220px; }
   .bm-card { width: 196px; height: 290px; }
-  .bm-swiper-wrap { height: 420px; }
+
+  /* Высота: только карточка + флакон сверху, без места для nav */
+  .bm-swiper-wrap { height: 370px; overflow: hidden; }
+
+  /* Peek: внешний контейнер НЕ обрезает трек — видны края карточек */
+  .bm-carousel-outer { overflow: visible; }
+
+  /* Скрыть кнопки назад/вперёд */
+  .bm-nav { display: none; }
+
+  /* Скрыть инфо-блок внутри слайда (он двигается вместе с треком) */
+  .bm-info { display: none; }
+
+  /* Показать статичную панель */
+  .bm-static-info { display: flex; }
 }

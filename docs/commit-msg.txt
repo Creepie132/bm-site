@@ -1,5 +1,9 @@
-feat: lang switcher always visible on mobile nav bar
+feat(mobile): карусель — peek-эффект, убраны кнопки nav, статичная инфо-панель с fade
 
-- index.html: added lang-switcher--nav-mobile between lang-switcher and burger button, always visible in nav bar on mobile
-- css/lang.css: added .lang-switcher--nav-mobile styles (hidden on desktop, flex on mobile <=768px); updated media query to exclude new class from desktop-hide rule; added RTL override for HE
-- JS unchanged: querySelectorAll('.lang-btn') already captures all instances
+- css/style.css: убран overflow:hidden с .bm-carousel-section; мобайл (<768px):
+  скрыты .bm-nav и .bm-info внутри слайда; .bm-carousel-outer overflow:visible (peek);
+  добавлены стили .bm-static-info, .bm-static-info__inner.fading, .bm-static-cat/name/price/buy
+- index.html: добавлен #bmStaticInfo блок между .bm-swiper-wrap и .bm-nav
+- js/main.js: updateStaticInfo(item, animated) — fade-обновление статичной панели;
+  кнопка #bmStaticBuy добавляет в bm_cart и редиректит на /shop;
+  applyProgress() вызывает updateStaticInfo при каждой смене активного слайда
