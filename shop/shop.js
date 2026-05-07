@@ -14,6 +14,7 @@
       shop_title:   'Магазин <em>Анеты</em>',
       shop_subtitle:'Только проверенные продукты, которым я доверяю сама',
       filter_all:   'Все',
+      add_to_cart:  'В корзину',
       search_placeholder: 'Поиск товаров...',
       sort_default:    'По умолчанию',
       sort_price_asc:  'Цена: возрастание',
@@ -46,6 +47,7 @@
       shop_title:   'חנות <em>אנטה</em>',
       shop_subtitle:'רק מוצרים מוכחים שאני סומכת עליהם בעצמי',
       filter_all:   'הכל',
+      add_to_cart:  'הוסף לסל',
       search_placeholder: 'חיפוש מוצרים...',
       sort_default:    'ברירת מחדל',
       sort_price_asc:  'מחיר: עולה',
@@ -95,6 +97,12 @@
     });
 
     try { localStorage.setItem('bm_lang', lang); } catch (_) {}
+
+    // При смене языка — перерисовываем фильтры и карточки если товары уже загружены
+    if (typeof allProducts !== 'undefined' && allProducts.length > 0) {
+      buildCategoryFilters();
+      renderProducts(true);
+    }
   }
 
   function initLang() {
@@ -112,6 +120,37 @@
 
   initLang();
 })();
+
+// ─── Категории: карта переводов ──────────────────────────────
+// Ключи — значения category из API (case-insensitive match)
+const CAT_LABELS = {
+  'парфюмерия':  { ru: 'Парфюмерия',  he: 'בשמים'   },
+  'косметика':   { ru: 'Косметика',   he: 'קוסמטיקה' },
+  'уход':        { ru: 'Уход',        he: 'טיפוח'    },
+  'макияж':      { ru: 'Макияж',      he: 'איפור'    },
+  'body':        { ru: 'Body',        he: 'גוף'      },
+  'beauty':      { ru: 'Beauty',      he: 'יופי'     },
+  'other':       { ru: 'Other',       he: 'אחר'      },
+};
+
+function getCatLabel(cat) {
+  const lang = document.documentElement.getAttribute('data-lang') || 'ru';
+  const key  = (cat || '').toLowerCase().trim();
+  const map  = CAT_LABELS[key];
+  if (map && map[lang]) return map[lang];
+  // Если категории нет в карте — вернуть как есть
+  return cat;
+}
+
+// ─── Хелпер: текущий перевод строки UI ──────────────────────
+function t(key) {
+  const lang = document.documentElement.getAttribute('data-lang') || 'ru';
+  // Берём из i18n через data-i18n атрибута невозможно — читаем из кнопок
+  const map = {
+    add_to_cart: { ru: 'В корзину', he: 'הוסף לסל' },
+  };
+  return (map[key] && map[key][lang]) || key;
+}
 
 // ─── Config ──────────────────────────────────────────────────
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
@@ -444,23 +483,37 @@ async function loadProducts() {
 function buildCategoryFilters() {
   const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))]
   const bar  = document.getElementById('shopFilters')
+  // Очищаем все кнопки кроме "Все" (первой) — она в HTML
+  Array.from(bar.querySelectorAll('.filter-chip:not([data-cat="all"])')).forEach(b => b.remove())
+  // Обновляем текст кнопки "Все"
+  const allBtn = bar.querySelector('.filter-chip[data-cat="all"]')
+  if (allBtn) {
+    const lang = document.documentElement.getAttribute('data-lang') || 'ru'
+    allBtn.textContent = lang === 'he' ? 'הכל' : 'Все'
+    allBtn.classList.toggle('active', activeCategory === 'all')
+  }
   cats.forEach(cat => {
     const btn = document.createElement('button')
-    btn.className  = 'filter-chip'
+    btn.className   = 'filter-chip'
     btn.dataset.cat = cat
-    btn.textContent = cat
+    btn.textContent = getCatLabel(cat)      // переведённое название
+    btn.classList.toggle('active', activeCategory === cat)
     bar.appendChild(btn)
   })
-  bar.addEventListener('click', e => {
-    const chip = e.target.closest('.filter-chip')
-    if (!chip) return
-    bar.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
-    chip.classList.add('active')
-    activeCategory   = chip.dataset.cat
-    filteredProducts = applyFilters()
-    currentPage      = 1
-    renderProducts(true)
-  })
+  // Вешаем обработчик только один раз (idempotent через флаг)
+  if (!bar.dataset.listenerAttached) {
+    bar.dataset.listenerAttached = '1'
+    bar.addEventListener('click', e => {
+      const chip = e.target.closest('.filter-chip')
+      if (!chip) return
+      bar.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'))
+      chip.classList.add('active')
+      activeCategory   = chip.dataset.cat
+      filteredProducts = applyFilters()
+      currentPage      = 1
+      renderProducts(true)
+    })
+  }
 }
 
 // Возвращает новый массив: категория + поиск + сортировка.
@@ -505,15 +558,16 @@ function renderProducts(clearContainer) {
   const hasMore = end < filteredProducts.length
 
   function cardHtml(p) {
+    const catLabel = getCatLabel(p.category)
     return `<div class="sp-card" data-id="${p.id}">
       <div class="sp-card__img">
         ${p.image_url
           ? `<img src="${esc(optimizeImg(p.image_url, 600))}" alt="${esc(p.name)}" loading="lazy" width="600" height="600" />`
           : '<div class="sp-card__placeholder">✦</div>'}
-        ${p.category ? `<span class="sp-card__badge">${esc(p.category)}</span>` : ''}
+        ${p.category ? `<span class="sp-card__badge">${esc(catLabel)}</span>` : ''}
       </div>
       <div class="sp-card__body">
-        ${p.category ? `<p class="sp-card__cat">${esc(p.category)}</p>` : ''}
+        ${p.category ? `<p class="sp-card__cat">${esc(catLabel)}</p>` : ''}
         <h3 class="sp-card__name">${esc(p.name)}</h3>
         ${p.description ? `<p class="sp-card__desc">${esc(p.description)}</p>` : '<div class="sp-card__desc"></div>'}
         <div class="sp-card__foot">
@@ -524,7 +578,7 @@ function renderProducts(clearContainer) {
               <span class="qty-ctrl__val" id="qty-${p.id}">1</span>
               <button class="qty-ctrl__btn" data-action="plus" data-id="${p.id}">+</button>
             </div>
-            <button class="add-to-cart-btn" data-id="${p.id}">В корзину</button>
+            <button class="add-to-cart-btn" data-id="${p.id}">${t('add_to_cart')}</button>
           </div>
         </div>
       </div>

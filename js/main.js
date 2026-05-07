@@ -36,6 +36,7 @@
       shop_cta:           'Весь магазин →',
       bs_label:           'Бьюти-коллекция',
       bs_title:           'Наши <em>бестселлеры</em>',
+      bs_buy:             'Купить',
       carousel_prev:      '← Назад',
       carousel_next:      'Вперёд →',
       gallery_label:      'Визуал',
@@ -99,6 +100,7 @@
       shop_cta:           'לכל החנות ←',
       bs_label:           'קולקציית יופי',
       bs_title:           '<em>הנמכרים ביותר</em> שלנו',
+      bs_buy:             'הוסף לסל',
       carousel_prev:      '→ הקודם',
       carousel_next:      'הבא ←',
       gallery_label:      'ויזואל',
@@ -484,12 +486,20 @@ function escStr(str) {
   const dotsEl  = document.getElementById('bmDots');
   if (!track) return;
 
+  // ─── Хелпер перевода для карусели ───────────────────────
+  function bmT(key) {
+    var lang = document.documentElement.getAttribute('data-lang') || 'ru';
+    var map = { bs_buy: { ru: 'Купить', he: 'הוסף לסל' } };
+    return (map[key] && map[key][lang]) || key;
+  }
+
   // ─── Рендер одного слайда ────────────────────────────────
   function renderSlide(item, isClone) {
-    const imgUrl = item.image_url || '';
-    const title  = escStr(item.title    || '');
-    const sub    = escStr(item.subtitle || '');
-    const price  = item.price ? '₪' + Number(item.price).toFixed(0) : '';
+    const imgUrl    = item.image_url || '';
+    const title     = escStr(item.title    || '');
+    const sub       = escStr(item.subtitle || '');
+    const price     = item.price ? '₪' + Number(item.price).toFixed(0) : '';
+    const productId = escStr(item.product_id || '');
     const slideEl = document.createElement('div');
     slideEl.className = 'bm-slide' + (isClone ? ' bm-clone' : '');
     slideEl.innerHTML = `
@@ -506,6 +516,7 @@ function escStr(str) {
         ${sub   ? `<div class="bm-cat"><span>${sub}</span></div>`   : ''}
         ${title ? `<div class="bm-name"><span>${title}</span></div>` : ''}
         ${price ? `<div class="bm-price"><span>${price}</span></div>` : ''}
+        ${productId && !isClone ? `<div class="bm-buy-wrap"><button class="bm-buy-btn" data-id="${productId}" data-i18n="bs_buy">${bmT('bs_buy')}</button></div>` : ''}
       </div>
     `;
     return slideEl;
@@ -675,6 +686,28 @@ function escStr(str) {
     .then(function (data) {
       var items = (data.bestsellers || []).filter(function (b) { return b.product_id; });
       initCarousel(items);
+      // Обработчик кнопки "Купить" — делегирование на track
+      track.addEventListener('click', function(e) {
+        var btn = e.target.closest('.bm-buy-btn');
+        if (!btn) return;
+        var pid   = btn.dataset.id;
+        var title = btn.closest('.bm-info')?.querySelector('.bm-name span')?.textContent || '';
+        var priceEl = btn.closest('.bm-info')?.querySelector('.bm-price span')?.textContent || '';
+        var price = parseFloat((priceEl || '').replace(/[^\d.]/g, '')) || 0;
+        // Добавляем в корзину shop.js (bm_cart в localStorage)
+        try {
+          var cart = JSON.parse(localStorage.getItem('bm_cart') || '[]');
+          var existing = cart.find(function(i) { return i.id === pid; });
+          if (existing) { existing.qty = Math.min(99, existing.qty + 1); }
+          else { cart.push({ id: pid, name: title, price: price, image_url: null, qty: 1 }); }
+          localStorage.setItem('bm_cart', JSON.stringify(cart));
+        } catch(_) {}
+        // Анимация кнопки
+        btn.classList.add('bm-buy-btn--added');
+        setTimeout(function() { btn.classList.remove('bm-buy-btn--added'); }, 1200);
+        // Переход в магазин через 0.6с
+        setTimeout(function() { window.location.href = '/shop'; }, 650);
+      });
     })
     .catch(function (err) {
       console.error('[BM Carousel] Failed to load bestsellers:', err);
