@@ -635,10 +635,10 @@ function renderProducts(clearContainer) {
       if (!product) return
       const qty = parseInt(document.getElementById(`qty-${id}`)?.textContent) || 1
       addToCart(product, qty)
-      e.currentTarget.textContent = '✓ Добавлено'
+      e.currentTarget.textContent = '✓ ' + (document.documentElement.getAttribute('data-lang') === 'he' ? 'נוסף' : 'Добавлено')
       e.currentTarget.classList.add('added')
       setTimeout(() => {
-        e.currentTarget.textContent = 'В корзину'
+        e.currentTarget.textContent = t('add_to_cart')
         e.currentTarget.classList.remove('added')
       }, 1500)
     })
