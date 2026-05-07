@@ -135,54 +135,39 @@
   function applyTranslations(lang) {
     const t = TRANSLATIONS[lang];
     if (!t) return;
-
-    // data-i18n → innerHTML
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
       if (t[key] !== undefined) el.innerHTML = t[key];
     });
-
-    // data-i18n-placeholder → placeholder attribute
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
       var key = el.getAttribute('data-i18n-placeholder');
       if (t[key] !== undefined) el.placeholder = t[key];
     });
-
-    // <html> lang + dir + data-lang
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     document.documentElement.setAttribute('data-lang', lang);
-
-    // title
     document.title = lang === 'he'
       ? 'Beautymania — יופי ואופנה עם אנטה'
       : 'Beautymania — Красота и Мода с Анетой';
-
-    // active button state — обновляем все копии кнопок (desktop + mobile)
     document.querySelectorAll('.lang-btn').forEach(function (btn) {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
-
-    // Сохраняем выбор
     try { localStorage.setItem('bm_lang', lang); } catch (_) {}
   }
 
   function initLang() {
-    // Читаем сохранённый язык
     var saved = '';
     try { saved = localStorage.getItem('bm_lang') || ''; } catch (_) {}
     var lang = (saved === 'he' || saved === 'ru') ? saved : 'ru';
     applyTranslations(lang);
   }
 
-  // Вешаем обработчики на ВСЕ кнопки языка (desktop + mobile)
   document.querySelectorAll('.lang-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       applyTranslations(btn.getAttribute('data-lang'));
     });
   });
 
-  // Инициализируем
   initLang();
 })();
 
@@ -190,11 +175,8 @@
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
 const SITE_URL      = 'https://beautymania.co.il';
-// Image Transform требует Supabase Pro — используем прямые URL
 
-// ─── Traffic Attribution Tracker (лендинг) ───────────────────
-// Тот же трекер что и в shop.js — первый заход фиксируется здесь,
-// shop.js проверяет localStorage и не перезаписывает.
+// ─── Traffic Attribution Tracker ─────────────────────────────
 ;(function captureTrafficSource() {
   const KEY = 'bm_traffic_source';
   if (localStorage.getItem(KEY)) return;
@@ -279,7 +261,7 @@ function initReveal() {
 }
 initReveal();
 
-// ─── Hero video — alternate between two clips ─────────────────
+// ─── Hero video ──────────────────────────────────────────────
 (function () {
   const video = document.getElementById('heroVideo');
   if (!video) return;
@@ -356,7 +338,7 @@ initReveal();
   strip.addEventListener('click', e => { if (movedPx > 5) return; const item = e.target.closest('.gallery__item'); if (!item || item.dataset.clone) return; const idx = origItems.indexOf(item); if (idx !== -1) lbOpen(idx); });
 })();
 
-// ─── SHOP — 4 рандомных товара + кнопка в магазин ────────────
+// ─── SHOP — 4 рандомных товара ───────────────────────────────
 (function () {
   const grid = document.getElementById('shopGrid');
   if (!grid) return;
@@ -367,15 +349,11 @@ initReveal();
       const res = await fetch(PRODUCTS_API);
       if (!res.ok) throw new Error('API error');
       const { products } = await res.json();
-
       if (!products || products.length === 0) {
         grid.innerHTML = '<p class="shop__empty">Товары скоро появятся...</p>';
         return;
       }
-
-      // 4 рандомных товара
       const four = [...products].sort(() => Math.random() - 0.5).slice(0, 4);
-
       grid.innerHTML = four.map(p => `
         <div class="product-card">
           <div class="product-card__img">
@@ -393,7 +371,6 @@ initReveal();
           </div>
         </div>
       `).join('');
-
       initReveal();
       if (window._clearImgSkeleton) window._clearImgSkeleton();
     } catch (err) {
@@ -443,7 +420,7 @@ initReveal();
   });
 })();
 
-// ─── Image Skeleton — снимаем shimmer после загрузки изображений ─────────────
+// ─── Image Skeleton ───────────────────────────────────────────
 (function () {
   function clearSkeleton(img) {
     const parent = img.closest('.blog-card__img, .product-card__img, .gallery__item, .tilt-card__inner');
@@ -459,7 +436,6 @@ initReveal();
     });
   }
   applyToAll();
-  // Для динамически загружаемых карточек (shop preview)
   window._clearImgSkeleton = applyToAll;
 })();
 
@@ -470,33 +446,29 @@ function escStr(str) {
 }
 
 
-/* ── BESTSELLERS CAROUSEL — динамический, бесконечный loop ── */
+/* ── BESTSELLERS CAROUSEL ── */
 (function () {
   const BESTSELLERS_API = 'https://ambersol.co.il/api/beautymania/bestsellers';
   const SPD = 700;
 
-  // Реальная ширина слайда — должна совпадать с CSS (.bm-slide width)
   function getSlideW() {
     return window.innerWidth <= 768 ? 220 : 260;
   }
 
-  const track  = document.getElementById('bmTrack');
-  const outer  = document.getElementById('bmOuter');
-  // wrap — прямой родитель трека, от него считаем centerOff (без padding outer)
-  const wrap   = outer ? (outer.querySelector('.bm-swiper-wrap') || outer) : null;
+  const track   = document.getElementById('bmTrack');
+  const outer   = document.getElementById('bmOuter');
+  const wrap    = outer ? (outer.querySelector('.bm-swiper-wrap') || outer) : null;
   const btnPrev = document.getElementById('bmPrev');
   const btnNext = document.getElementById('bmNext');
   const dotsEl  = document.getElementById('bmDots');
   if (!track) return;
 
-  // ─── Хелпер перевода для карусели ───────────────────────
   function bmT(key) {
     var lang = document.documentElement.getAttribute('data-lang') || 'ru';
     var map = { bs_buy: { ru: 'Купить', he: 'הוסף לסל' } };
     return (map[key] && map[key][lang]) || key;
   }
 
-  // ─── Рендер одного слайда ────────────────────────────────
   function renderSlide(item, isClone) {
     const imgUrl    = item.image_url || '';
     const title     = escStr(item.title    || '');
@@ -525,38 +497,25 @@ function escStr(str) {
     return slideEl;
   }
 
-  // ─── Инициализация карусели после получения данных ───────
   function initCarousel(items) {
-    if (!items.length) {
-      outer.style.display = 'none';
-      return;
-    }
+    if (!items.length) { outer.style.display = 'none'; return; }
 
     track.innerHTML = '';
     dotsEl.innerHTML = '';
 
     const TOTAL = items.length;
-
-    // ─── Circular buffer: полный набор клонов с каждой стороны ───
-    // Структура трека: [...TOTAL клонов конца | TOTAL реальных | ...TOTAL клонов начала]
-    // При этом по краям всегда есть TOTAL слайдов — прыжок никогда не будет виден.
-    // current стартует с TOTAL (первый реальный слайд).
-    var realSlides = items.map(function(item) { return renderSlide(item, false); });
-    var clonesBefore = items.map(function(item) { return renderSlide(item, true); });
-    var clonesAfter  = items.map(function(item) { return renderSlide(item, true); });
+    var realSlides   = items.map(function(item) { return renderSlide(item, false); });
+    var clonesBefore = items.map(function(item) { return renderSlide(item, true);  });
+    var clonesAfter  = items.map(function(item) { return renderSlide(item, true);  });
 
     clonesBefore.forEach(function(el) { track.appendChild(el); });
     realSlides.forEach(function(el)   { track.appendChild(el); });
     clonesAfter.forEach(function(el)  { track.appendChild(el); });
 
-    // current — индекс активного слайда в треке (0-based)
-    // Реальные слайды: индексы [TOTAL .. 2*TOTAL-1]
-    // Стартуем на первом реальном
-    var current = TOTAL;
-    var STOTAL  = TOTAL * 3; // всего слайдов в треке
+    var current    = TOTAL;
+    var STOTAL     = TOTAL * 3;
     var isAnimating = false;
 
-    // Точки — только TOTAL штук
     var dots = [];
     for (var di = 0; di < TOTAL; di++) {
       (function(i) {
@@ -568,9 +527,7 @@ function escStr(str) {
       })(di);
     }
 
-    // ─── applyProgress ───────────────────────────────────────
     function applyProgress(animated) {
-      var slides      = track.querySelectorAll('.bm-slide');
       var cards       = track.querySelectorAll('.bm-card');
       var cardBgs     = track.querySelectorAll('.bm-card-bg');
       var bottleWraps = track.querySelectorAll('.bm-bottle-wrap');
@@ -580,11 +537,10 @@ function escStr(str) {
       var names       = track.querySelectorAll('.bm-name span');
       var prices      = track.querySelectorAll('.bm-price span');
 
-      var SLIDE_W = getSlideW();
+      var SW = getSlideW();
       var cw = (wrap ? wrap.clientWidth : 0) || (outer ? outer.clientWidth : 0) || 680;
-      if (cw < SLIDE_W) cw = SLIDE_W; // защита от нулевого layout
-      var centerOff = (cw - SLIDE_W) / 2;
-      var tx = centerOff - current * SLIDE_W;
+      if (cw < SW) cw = SW;
+      var tx = (cw - SW) / 2 - current * SW;
 
       track.style.transition = animated
         ? 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)'
@@ -604,15 +560,13 @@ function escStr(str) {
           cards[i].style.setProperty('--bm-border-op', isAct ? '1' : '0');
           cards[i].classList.toggle('bm-active', isAct);
         }
-        if (cardBgs[i])     cardBgs[i].style.opacity     = isAct ? '1' : '0';
-        if (infos[i])       infos[i].style.opacity       = isAct ? '1' : '0';
-        if (shadows[i])     shadows[i].style.opacity     = isAct ? '1' : '0';
+        if (cardBgs[i])     cardBgs[i].style.opacity = isAct ? '1' : '0';
+        if (infos[i])       infos[i].style.opacity   = isAct ? '1' : '0';
+        if (shadows[i])     shadows[i].style.opacity = isAct ? '1' : '0';
 
         if (bottleWraps[i]) {
-          var imgTx  = prog * -80;
-          var imgRot = absP * 15 - 15;
           bottleWraps[i].style.transition = animated ? ('transform ' + dur) : 'none';
-          bottleWraps[i].style.transform  = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
+          bottleWraps[i].style.transform  = 'translate3d(' + (prog * -80) + 'px,0,0) rotate(' + (absP * 15 - 15) + 'deg)';
         }
         if (shadows[i]) {
           shadows[i].style.transition = animated ? ('transform ' + dur) : 'none';
@@ -623,112 +577,117 @@ function escStr(str) {
         if (prices[i]) { prices[i].style.transition = animated ? ('transform ' + dur) : 'none'; prices[i].style.transform = 'translateY(0)'; }
       }
 
-      // Точки: реальный индекс = current - TOTAL, зациклен
       var realIdx = ((current - TOTAL) % TOTAL + TOTAL) % TOTAL;
       dots.forEach(function(d, i) { d.classList.toggle('active', i === realIdx); });
-
       btnPrev.disabled = false;
       btnNext.disabled = false;
     }
 
-    // ─── goTo — circular buffer teleport ────────────────────
     function goTo(idx, skipAnimation) {
       if (isAnimating && !skipAnimation) return;
       isAnimating = true;
       current = idx;
       applyProgress(!skipAnimation);
-
       setTimeout(function() {
-        // Если вышли за левый край клонов — телепортируемся в зеркальную позицию реальных
-        if (current < TOTAL) {
-          current = current + TOTAL;
-          applyProgress(false);
-        }
-        // Если вышли за правый край клонов — телепортируемся назад
-        else if (current >= TOTAL * 2) {
-          current = current - TOTAL;
-          applyProgress(false);
-        }
+        if (current < TOTAL)         { current += TOTAL; applyProgress(false); }
+        else if (current >= TOTAL*2) { current -= TOTAL; applyProgress(false); }
         isAnimating = false;
       }, skipAnimation ? 0 : SPD + 20);
     }
 
-    // Ждём один тик рендера чтобы clientWidth был актуальным
-    requestAnimationFrame(function() {
-      applyProgress(false);
-    });
+    requestAnimationFrame(function() { applyProgress(false); });
 
     btnPrev.addEventListener('click', function() { goTo(current - 1); });
     btnNext.addEventListener('click', function() { goTo(current + 1); });
 
-    // ─── Touch/pointer свайп с live-следованием ──────────────
-    var dragStartX = 0;
+    // ─── Свайп: touch (мобиль) + mouse (десктоп) ─────────────
+    // Разделены намеренно — e.preventDefault() в pointerdown
+    // блокирует тач-события на iOS/Android.
+    var dragStartX  = 0;
     var dragStartTx = 0;
-    var dragActive = false;
+    var dragActive  = false;
 
-    function getDragBaseTx() {
-      var SLIDE_W = getSlideW();
+    function calcBaseTx() {
+      var SW = getSlideW();
       var cw = (wrap ? wrap.clientWidth : 0) || (outer ? outer.clientWidth : 0) || 680;
-      if (cw < SLIDE_W) cw = SLIDE_W;
-      return (cw - SLIDE_W) / 2 - current * SLIDE_W;
+      if (cw < SW) cw = SW;
+      return (cw - SW) / 2 - current * SW;
     }
 
-    track.addEventListener('pointerdown', function(e) {
-      e.preventDefault();
+    function onStart(clientX) {
       if (isAnimating) return;
-      dragActive = true;
-      dragStartX = e.clientX;
-      dragStartTx = getDragBaseTx();
+      dragActive  = true;
+      dragStartX  = clientX;
+      dragStartTx = calcBaseTx();
       track.style.transition = 'none';
-      track.setPointerCapture(e.pointerId);
-    });
+    }
 
-    track.addEventListener('pointermove', function(e) {
+    function onMove(clientX) {
       if (!dragActive) return;
-      var dx = e.clientX - dragStartX;
-      // Живое следование за пальцем с лёгким resistance
-      track.style.transform = 'translateX(' + (dragStartTx + dx * 0.85) + 'px)';
-    });
+      track.style.transform = 'translateX(' + (dragStartTx + (clientX - dragStartX)) + 'px)';
+    }
 
-    track.addEventListener('pointerup', function(e) {
+    function onEnd(clientX) {
       if (!dragActive) return;
       dragActive = false;
-      var diff = dragStartX - e.clientX;
+      var diff = dragStartX - clientX;
       if (Math.abs(diff) > 40) {
         goTo(current + (diff > 0 ? 1 : -1));
       } else {
-        // Возвращаем на место если свайп слишком маленький
         applyProgress(true);
       }
-    });
+    }
 
-    track.addEventListener('pointercancel', function() {
+    function onCancel() {
       if (!dragActive) return;
       dragActive = false;
       applyProgress(true);
-    });
+    }
 
-    window.addEventListener('resize', function() {
-      // Пересчитываем позицию с актуальной шириной wrap и слайда
-      applyProgress(false);
+    // Touch — passive:true на start чтобы не блокировать скролл страницы,
+    // passive:false на move — только если свайп уже начат (блокируем скролл тогда)
+    track.addEventListener('touchstart', function(e) {
+      onStart(e.touches[0].clientX);
+    }, { passive: true });
+
+    track.addEventListener('touchmove', function(e) {
+      if (!dragActive) return;
+      e.preventDefault(); // блокируем скролл страницы только во время свайпа карусели
+      onMove(e.touches[0].clientX);
+    }, { passive: false });
+
+    track.addEventListener('touchend', function(e) {
+      onEnd(e.changedTouches[0].clientX);
+    }, { passive: true });
+
+    track.addEventListener('touchcancel', function() {
+      onCancel();
+    }, { passive: true });
+
+    // Mouse
+    track.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      onStart(e.clientX);
     });
+    window.addEventListener('mousemove', function(e) { onMove(e.clientX); });
+    window.addEventListener('mouseup',   function(e) { onEnd(e.clientX);  });
+
+    window.addEventListener('resize', function() { applyProgress(false); });
   }
 
-  // ─── Загрузка данных из Trinity ──────────────────────────
   fetch(BESTSELLERS_API)
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      var items = (data.bestsellers || []).filter(function (b) { return b.product_id; });
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var items = (data.bestsellers || []).filter(function(b) { return b.product_id; });
       initCarousel(items);
-      // Обработчик кнопки "Купить" — делегирование на track
+
       track.addEventListener('click', function(e) {
         var btn = e.target.closest('.bm-buy-btn');
         if (!btn) return;
-        var pid   = btn.dataset.id;
-        var title = btn.closest('.bm-info')?.querySelector('.bm-name span')?.textContent || '';
+        var pid     = btn.dataset.id;
+        var title   = btn.closest('.bm-info')?.querySelector('.bm-name span')?.textContent || '';
         var priceEl = btn.closest('.bm-info')?.querySelector('.bm-price span')?.textContent || '';
-        var price = parseFloat((priceEl || '').replace(/[^\d.]/g, '')) || 0;
-        // Добавляем в корзину shop.js (bm_cart в localStorage)
+        var price   = parseFloat((priceEl || '').replace(/[^\d.]/g, '')) || 0;
         try {
           var cart = JSON.parse(localStorage.getItem('bm_cart') || '[]');
           var existing = cart.find(function(i) { return i.id === pid; });
@@ -736,16 +695,13 @@ function escStr(str) {
           else { cart.push({ id: pid, name: title, price: price, image_url: null, qty: 1 }); }
           localStorage.setItem('bm_cart', JSON.stringify(cart));
         } catch(_) {}
-        // Анимация кнопки
         btn.classList.add('bm-buy-btn--added');
         setTimeout(function() { btn.classList.remove('bm-buy-btn--added'); }, 1200);
-        // Переход в магазин через 0.6с
         setTimeout(function() { window.location.href = '/shop'; }, 650);
       });
     })
-    .catch(function (err) {
+    .catch(function(err) {
       console.error('[BM Carousel] Failed to load bestsellers:', err);
-      // Скрываем секцию если нет данных
       var section = document.getElementById('bestsellers');
       if (section) section.style.display = 'none';
     });
