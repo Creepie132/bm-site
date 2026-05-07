@@ -573,7 +573,8 @@ function escStr(str) {
       var names       = track.querySelectorAll('.bm-name span');
       var prices      = track.querySelectorAll('.bm-price span');
 
-      var cw = (wrap ? wrap.offsetWidth : 0) || (outer ? outer.offsetWidth : 0) || 680;
+      var cw = (wrap ? wrap.clientWidth : 0) || (outer ? outer.clientWidth : 0) || 680;
+      if (cw < SLIDE_W) cw = SLIDE_W; // защита от нулевого layout
       var centerOff = (cw - SLIDE_W) / 2;
       var tx = centerOff - current * SLIDE_W;
 
@@ -644,7 +645,10 @@ function escStr(str) {
       }, skipAnimation ? 0 : SPD + 20);
     }
 
-    applyProgress(false);
+    // Ждём один тик рендера чтобы offsetWidth был актуальным
+    requestAnimationFrame(function() {
+      applyProgress(false);
+    });
 
     btnPrev.addEventListener('click', function() { goTo(current - 1); });
     btnNext.addEventListener('click', function() { goTo(current + 1); });
