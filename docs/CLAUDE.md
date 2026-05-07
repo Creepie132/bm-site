@@ -83,13 +83,19 @@ bm_site/
 **Типографика:**
 - Заголовки: Cormorant Garamond (Google Fonts, serif)
 - Текст: Montserrat (Google Fonts, sans-serif)
-- Иврит (HE): заголовки — `Noto Serif Hebrew` (serif, элегантный), текст — `Rubik`
+- Иврит (HE): заголовки — `Cormorant Garamond` + `Assistant` (только иврит через unicode-range), текст — `Rubik`
 
-> ⚠️ **ПРАВИЛО ШРИФТОВ — НЕЛЬЗЯ НАРУШАТЬ:**
-> На иврите `--ff-display: 'Noto Serif Hebrew', 'Cormorant Garamond', Georgia, serif`
-> `--ff-body` на иврите — `Rubik`. Менять ЗАПРЕЩЕНО без явной просьбы Влада.
-> Frank Ruhl Libre и Heebo — удалены намеренно (выглядели "религиозно").
-> Noto Serif Hebrew — финальное решение, согласованное с владельцем.
+> ⚠️ **ПРАВИЛО ШРИФТОВ — АБСОЛЮТНЫЙ ЗАПРЕТ:**
+> **НИКОГДА не менять шрифты и их размеры без прямой явной просьбы Влада в сообщении.**
+> Это касается font-family, font-size, clamp(), letter-spacing, line-height — всего.
+> Даже если кажется что "так лучше" — не трогать.
+>
+> Текущее решение HE (финальное, согласовано с владельцем):
+> - `--ff-display: 'Cormorant Garamond', 'Assistant', Georgia, serif`
+> - `Assistant` подключён через `@font-face` с `unicode-range: U+0590-05FF, U+FB1D-FB4F` — применяется **только** к ивритским символам, латиница остаётся Cormorant Garamond
+> - `--ff-body: 'Rubik', sans-serif`
+> - Размеры на иврите увеличены в `lang.css` (главная + магазин) чтобы визуально совпадать с RU-версией
+> - Frank Ruhl Libre, Heebo, Noto Serif Hebrew — удалены, не возвращать
 
 **Компоненты:**
 - Hero: fullscreen видео с двумя клипами (чередование через JS)
@@ -443,6 +449,26 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 ---
 
 ## 18. История изменений
+
+### 08.05.2026
+
+**Commits (bm-site)** — Типографика иврита: полный цикл исправлений
+
+**Итоговое решение шрифтов HE:**
+- `--ff-display: 'Cormorant Garamond', 'Assistant', Georgia, serif`
+- `Assistant` через `@font-face` с `unicode-range: U+0590-05FF` — только ивритские символы, латиница (Beautymania) остаётся Cormorant Garamond
+- `--ff-body: 'Rubik', sans-serif`
+
+**Размеры шрифтов HE (lang.css):**
+- Главная: `section__title`, `hero__sub`, `section__label`, `body`, `blog h3`, `collab h4`, `stat__num`, параграфы
+- Магазин: `shop-header__sub`, `sp-card__name/desc/price`, `cart-sidebar h3`, `#cartTotal`, `checkout total`, `filter-chip`, `sort/search`, `add-to-cart-btn`
+- Цель: визуально совпадать с RU-версией (компенсация оптического размера Assistant vs Cormorant)
+
+> ⚠️ **ПРАВИЛО:** шрифты и размеры — НИКОГДА не менять без прямой просьбы Влада
+
+**Затронутые файлы:** `css/lang.css`, `index.html`, `shop/index.html`
+
+---
 
 ### 07.05.2026 (6)
 
