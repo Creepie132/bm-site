@@ -1,4 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
 // BEAUTYMANIA — i18n (RU / HE)
 // ═══════════════════════════════════════════════════════════════
 ;(function () {
@@ -474,8 +473,12 @@ function escStr(str) {
 /* ── BESTSELLERS CAROUSEL — динамический, бесконечный loop ── */
 (function () {
   const BESTSELLERS_API = 'https://ambersol.co.il/api/beautymania/bestsellers';
-  const SLIDE_W = 260;
   const SPD = 700;
+
+  // Реальная ширина слайда — должна совпадать с CSS (.bm-slide width)
+  function getSlideW() {
+    return window.innerWidth <= 768 ? 220 : 260;
+  }
 
   const track  = document.getElementById('bmTrack');
   const outer  = document.getElementById('bmOuter');
@@ -538,17 +541,10 @@ function escStr(str) {
     // Структура трека: [...TOTAL клонов конца | TOTAL реальных | ...TOTAL клонов начала]
     // При этом по краям всегда есть TOTAL слайдов — прыжок никогда не будет виден.
     // current стартует с TOTAL (первый реальный слайд).
-    for (var ci = 0; ci < TOTAL; ci++) {
-      track.appendChild(renderSlide(items[ci], true)); // клоны начала (в конце трека придут позже)
-    }
-    // Вставляем в начало трека клоны конца (items в обратном порядке относительно конца → начала)
-    // Сначала строим реальные, потом вставляем клоны конца перед ними
     var realSlides = items.map(function(item) { return renderSlide(item, false); });
     var clonesBefore = items.map(function(item) { return renderSlide(item, true); });
     var clonesAfter  = items.map(function(item) { return renderSlide(item, true); });
 
-    // Очищаем и строим правильный порядок
-    track.innerHTML = '';
     clonesBefore.forEach(function(el) { track.appendChild(el); });
     realSlides.forEach(function(el)   { track.appendChild(el); });
     clonesAfter.forEach(function(el)  { track.appendChild(el); });
@@ -584,6 +580,7 @@ function escStr(str) {
       var names       = track.querySelectorAll('.bm-name span');
       var prices      = track.querySelectorAll('.bm-price span');
 
+      var SLIDE_W = getSlideW();
       var cw = (wrap ? wrap.clientWidth : 0) || (outer ? outer.clientWidth : 0) || 680;
       if (cw < SLIDE_W) cw = SLIDE_W; // защита от нулевого layout
       var centerOff = (cw - SLIDE_W) / 2;
@@ -656,7 +653,7 @@ function escStr(str) {
       }, skipAnimation ? 0 : SPD + 20);
     }
 
-    // Ждём один тик рендера чтобы offsetWidth был актуальным
+    // Ждём один тик рендера чтобы clientWidth был актуальным
     requestAnimationFrame(function() {
       applyProgress(false);
     });
@@ -664,18 +661,55 @@ function escStr(str) {
     btnPrev.addEventListener('click', function() { goTo(current - 1); });
     btnNext.addEventListener('click', function() { goTo(current + 1); });
 
-    var startX = 0;
+    // ─── Touch/pointer свайп с live-следованием ──────────────
+    var dragStartX = 0;
+    var dragStartTx = 0;
+    var dragActive = false;
+
+    function getDragBaseTx() {
+      var SLIDE_W = getSlideW();
+      var cw = (wrap ? wrap.clientWidth : 0) || (outer ? outer.clientWidth : 0) || 680;
+      if (cw < SLIDE_W) cw = SLIDE_W;
+      return (cw - SLIDE_W) / 2 - current * SLIDE_W;
+    }
+
     track.addEventListener('pointerdown', function(e) {
       e.preventDefault();
-      startX = e.clientX;
+      if (isAnimating) return;
+      dragActive = true;
+      dragStartX = e.clientX;
+      dragStartTx = getDragBaseTx();
+      track.style.transition = 'none';
+      track.setPointerCapture(e.pointerId);
     });
+
+    track.addEventListener('pointermove', function(e) {
+      if (!dragActive) return;
+      var dx = e.clientX - dragStartX;
+      // Живое следование за пальцем с лёгким resistance
+      track.style.transform = 'translateX(' + (dragStartTx + dx * 0.85) + 'px)';
+    });
+
     track.addEventListener('pointerup', function(e) {
-      var diff = startX - e.clientX;
-      if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+      if (!dragActive) return;
+      dragActive = false;
+      var diff = dragStartX - e.clientX;
+      if (Math.abs(diff) > 40) {
+        goTo(current + (diff > 0 ? 1 : -1));
+      } else {
+        // Возвращаем на место если свайп слишком маленький
+        applyProgress(true);
+      }
+    });
+
+    track.addEventListener('pointercancel', function() {
+      if (!dragActive) return;
+      dragActive = false;
+      applyProgress(true);
     });
 
     window.addEventListener('resize', function() {
-      // Пересчитываем позицию с актуальной шириной wrap
+      // Пересчитываем позицию с актуальной шириной wrap и слайда
       applyProgress(false);
     });
   }
