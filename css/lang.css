@@ -108,8 +108,8 @@
 
 /* ── HEBREW FONT VARIABLES (активны только при lang=he) ── */
 html[data-lang="he"] {
-  /* Заголовки: Cormorant Garamond для латиницы, Rubik для иврита */
-  --ff-display: 'Cormorant Garamond', 'Rubik', Georgia, serif;
+  /* Заголовки: Noto Serif Hebrew — элегантный serif для иврита */
+  --ff-display: 'Noto Serif Hebrew', 'Cormorant Garamond', Georgia, serif;
   --ff-body:    'Rubik', sans-serif;
 }
 
