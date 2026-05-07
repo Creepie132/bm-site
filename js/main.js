@@ -477,6 +477,8 @@ function escStr(str) {
 
   const track  = document.getElementById('bmTrack');
   const outer  = document.getElementById('bmOuter');
+  // wrap — прямой родитель трека, от него считаем centerOff (без padding outer)
+  const wrap   = outer ? (outer.querySelector('.bm-swiper-wrap') || outer) : null;
   const btnPrev = document.getElementById('bmPrev');
   const btnNext = document.getElementById('bmNext');
   const dotsEl  = document.getElementById('bmDots');
@@ -571,7 +573,7 @@ function escStr(str) {
       var names       = track.querySelectorAll('.bm-name span');
       var prices      = track.querySelectorAll('.bm-price span');
 
-      var cw = outer.offsetWidth || 680;
+      var cw = (wrap ? wrap.offsetWidth : 0) || (outer ? outer.offsetWidth : 0) || 680;
       var centerOff = (cw - SLIDE_W) / 2;
       var tx = centerOff - current * SLIDE_W;
 
@@ -657,7 +659,10 @@ function escStr(str) {
       if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
     });
 
-    window.addEventListener('resize', function() { applyProgress(false); });
+    window.addEventListener('resize', function() {
+      // Пересчитываем позицию с актуальной шириной wrap
+      applyProgress(false);
+    });
   }
 
   // ─── Загрузка данных из Trinity ──────────────────────────
