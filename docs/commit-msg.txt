@@ -1,7 +1,5 @@
-feat: add RU/HE language switcher to shop page
+feat: lang switcher always visible on mobile nav bar
 
-- Added lang switcher (RU / HE) in shop nav (desktop + mobile)
-- Full i18n for shop: header, filters, search, sort, cart, checkout, footer
-- Rubik font added for Hebrew on shop page
-- Language synced via localStorage bm_lang key (same as main page)
-- RTL layout applied via shared lang.css
+- index.html: added lang-switcher--nav-mobile between lang-switcher and burger button, always visible in nav bar on mobile
+- css/lang.css: added .lang-switcher--nav-mobile styles (hidden on desktop, flex on mobile <=768px); updated media query to exclude new class from desktop-hide rule; added RTL override for HE
+- JS unchanged: querySelectorAll('.lang-btn') already captures all instances
