@@ -99,10 +99,12 @@
     try { localStorage.setItem('bm_lang', lang); } catch (_) {}
 
     // При смене языка — перерисовываем фильтры и карточки если товары уже загружены
-    if (typeof allProducts !== 'undefined' && allProducts.length > 0) {
-      buildCategoryFilters();
-      renderProducts(true);
-    }
+    try {
+      if (allProducts && allProducts.length > 0) {
+        buildCategoryFilters();
+        renderProducts(true);
+      }
+    } catch (_) { /* allProducts ещё не инициализирован — ничего не делаем */ }
   }
 
   function initLang() {
