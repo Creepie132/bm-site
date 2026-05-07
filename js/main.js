@@ -516,159 +516,148 @@ function escStr(str) {
       return;
     }
 
-    // Очищаем track (убираем placeholder-комментарий)
     track.innerHTML = '';
     dotsEl.innerHTML = '';
 
     const TOTAL = items.length;
 
-    // Бесконечный loop: клонируем последний слайд перед первым и первый после последнего
-    // Это позволяет плавно прыгать при достижении края
-    const cloneLast  = renderSlide(items[TOTAL - 1], true);
-    const cloneFirst = renderSlide(items[0], true);
+    // ─── Circular buffer: полный набор клонов с каждой стороны ───
+    // Структура трека: [...TOTAL клонов конца | TOTAL реальных | ...TOTAL клонов начала]
+    // При этом по краям всегда есть TOTAL слайдов — прыжок никогда не будет виден.
+    // current стартует с TOTAL (первый реальный слайд).
+    for (var ci = 0; ci < TOTAL; ci++) {
+      track.appendChild(renderSlide(items[ci], true)); // клоны начала (в конце трека придут позже)
+    }
+    // Вставляем в начало трека клоны конца (items в обратном порядке относительно конца → начала)
+    // Сначала строим реальные, потом вставляем клоны конца перед ними
+    var realSlides = items.map(function(item) { return renderSlide(item, false); });
+    var clonesBefore = items.map(function(item) { return renderSlide(item, true); });
+    var clonesAfter  = items.map(function(item) { return renderSlide(item, true); });
 
-    track.appendChild(cloneLast);
-    items.forEach(item => track.appendChild(renderSlide(item, false)));
-    track.appendChild(cloneFirst);
+    // Очищаем и строим правильный порядок
+    track.innerHTML = '';
+    clonesBefore.forEach(function(el) { track.appendChild(el); });
+    realSlides.forEach(function(el)   { track.appendChild(el); });
+    clonesAfter.forEach(function(el)  { track.appendChild(el); });
 
-    // Реальные слайды начинаются с индекса 1 (после клона последнего)
-    // current — индекс среди ВСЕХ слайдов (включая клоны)
-    let current = 1; // стартуем на первом реальном слайде
-    let isAnimating = false;
+    // current — индекс активного слайда в треке (0-based)
+    // Реальные слайды: индексы [TOTAL .. 2*TOTAL-1]
+    // Стартуем на первом реальном
+    var current = TOTAL;
+    var STOTAL  = TOTAL * 3; // всего слайдов в треке
+    var isAnimating = false;
 
-    // Ссылки на живые DOM-элементы
-    function getAllSlides()       { return track.querySelectorAll('.bm-slide'); }
-    function getAllCards()        { return track.querySelectorAll('.bm-card'); }
-    function getAllCardBgs()      { return track.querySelectorAll('.bm-card-bg'); }
-    function getAllBottleWraps()  { return track.querySelectorAll('.bm-bottle-wrap'); }
-    function getAllShadows()      { return track.querySelectorAll('.bm-shadow'); }
-    function getAllInfos()        { return track.querySelectorAll('.bm-info'); }
-    function getAllCats()         { return track.querySelectorAll('.bm-cat span'); }
-    function getAllNames()        { return track.querySelectorAll('.bm-name span'); }
-    function getAllPrices()       { return track.querySelectorAll('.bm-price span'); }
-
-    // Точки — только для реальных слайдов
-    const dots = [];
-    for (let i = 0; i < TOTAL; i++) {
-      const d = document.createElement('div');
-      d.className = 'bm-dot' + (i === 0 ? ' active' : '');
-      d.addEventListener('click', function () { goTo(i + 1); }); // +1 из-за клона в начале
-      dotsEl.appendChild(d);
-      dots.push(d);
+    // Точки — только TOTAL штук
+    var dots = [];
+    for (var di = 0; di < TOTAL; di++) {
+      (function(i) {
+        var d = document.createElement('div');
+        d.className = 'bm-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', function() { goTo(TOTAL + i); });
+        dotsEl.appendChild(d);
+        dots.push(d);
+      })(di);
     }
 
-    // ─── applyProgress — применяет позицию без анимации ─────
+    // ─── applyProgress ───────────────────────────────────────
     function applyProgress(animated) {
-      const slides = getAllSlides();
-      const cards  = getAllCards();
-      const cardBgs = getAllCardBgs();
-      const bottleWraps = getAllBottleWraps();
-      const shadows = getAllShadows();
-      const infos   = getAllInfos();
-      const cats    = getAllCats();
-      const names   = getAllNames();
-      const prices  = getAllPrices();
-      const STOTAL  = slides.length; // TOTAL + 2 клона
+      var slides      = track.querySelectorAll('.bm-slide');
+      var cards       = track.querySelectorAll('.bm-card');
+      var cardBgs     = track.querySelectorAll('.bm-card-bg');
+      var bottleWraps = track.querySelectorAll('.bm-bottle-wrap');
+      var shadows     = track.querySelectorAll('.bm-shadow');
+      var infos       = track.querySelectorAll('.bm-info');
+      var cats        = track.querySelectorAll('.bm-cat span');
+      var names       = track.querySelectorAll('.bm-name span');
+      var prices      = track.querySelectorAll('.bm-price span');
 
-      const cw = outer.offsetWidth || 680;
-      const centerOff = (cw - SLIDE_W) / 2;
-      const tx = centerOff - current * SLIDE_W;
+      var cw = outer.offsetWidth || 680;
+      var centerOff = (cw - SLIDE_W) / 2;
+      var tx = centerOff - current * SLIDE_W;
 
-      if (animated) {
-        track.style.transition = 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)';
-      } else {
-        track.style.transition = 'none';
-      }
+      track.style.transition = animated
+        ? 'transform ' + SPD + 'ms cubic-bezier(0.22,0.74,0.46,0.97)'
+        : 'none';
       track.style.transform = 'translateX(' + tx + 'px)';
 
-      const dur = SPD + 'ms';
-      for (let i = 0; i < STOTAL; i++) {
-        const prog = i - current;
-        const absP = Math.abs(prog);
-        const isActive = absP === 0;
+      var dur = SPD + 'ms';
+      for (var i = 0; i < STOTAL; i++) {
+        var prog  = i - current;
+        var absP  = Math.abs(prog);
+        var isAct = absP === 0;
 
         if (cards[i]) {
           cards[i].style.transition = animated ? ('transform ' + dur + ', filter ' + dur) : 'none';
-          cards[i].style.transform = 'scale(' + (1 - absP * 0.2) + ')';
-          cards[i].style.filter = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
-          cards[i].style.setProperty('--bm-border-op', isActive ? '1' : '0');
-          cards[i].classList.toggle('bm-active', isActive);
+          cards[i].style.transform  = 'scale(' + (1 - absP * 0.2) + ')';
+          cards[i].style.filter     = absP >= 1 ? 'brightness(0.35)' : 'brightness(1)';
+          cards[i].style.setProperty('--bm-border-op', isAct ? '1' : '0');
+          cards[i].classList.toggle('bm-active', isAct);
         }
-        if (cardBgs[i]) cardBgs[i].style.opacity = isActive ? '1' : '0';
-        if (infos[i])   infos[i].style.opacity   = isActive ? '1' : '0';
-        if (shadows[i]) shadows[i].style.opacity  = isActive ? '1' : '0';
+        if (cardBgs[i])     cardBgs[i].style.opacity     = isAct ? '1' : '0';
+        if (infos[i])       infos[i].style.opacity       = isAct ? '1' : '0';
+        if (shadows[i])     shadows[i].style.opacity     = isAct ? '1' : '0';
 
         if (bottleWraps[i]) {
-          const imgTx  = prog * -80;
-          const imgRot = absP * 15 - 15;
+          var imgTx  = prog * -80;
+          var imgRot = absP * 15 - 15;
           bottleWraps[i].style.transition = animated ? ('transform ' + dur) : 'none';
           bottleWraps[i].style.transform  = 'translate3d(' + imgTx + 'px,0,0) rotate(' + imgRot + 'deg)';
         }
         if (shadows[i]) {
-          const imgTx = prog * -80;
           shadows[i].style.transition = animated ? ('transform ' + dur) : 'none';
-          shadows[i].style.transform  = 'translateX(' + (imgTx / 2) + 'px)';
+          shadows[i].style.transform  = 'translateX(' + ((prog * -80) / 2) + 'px)';
         }
-
-        const textY = absP * 50;
-        [cats[i], names[i], prices[i]].forEach(function (s) {
-          if (!s) return;
-          s.style.transition = animated ? ('transform ' + dur) : 'none';
-          s.style.transform  = 'translateY(0)';
-        });
+        if (cats[i])   { cats[i].style.transition   = animated ? ('transform ' + dur) : 'none'; cats[i].style.transform   = 'translateY(0)'; }
+        if (names[i])  { names[i].style.transition  = animated ? ('transform ' + dur) : 'none'; names[i].style.transform  = 'translateY(0)'; }
+        if (prices[i]) { prices[i].style.transition = animated ? ('transform ' + dur) : 'none'; prices[i].style.transform = 'translateY(0)'; }
       }
 
-      // Точки — реальный индекс = current - 1 (минус клон-начало), с зацикливанием
-      const realIdx = ((current - 1) % TOTAL + TOTAL) % TOTAL;
-      dots.forEach(function (d, i) { d.classList.toggle('active', i === realIdx); });
+      // Точки: реальный индекс = current - TOTAL, зациклен
+      var realIdx = ((current - TOTAL) % TOTAL + TOTAL) % TOTAL;
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === realIdx); });
 
-      // Кнопки — всегда активны (бесконечный loop)
       btnPrev.disabled = false;
       btnNext.disabled = false;
     }
 
-    // ─── goTo — переход с бесконечным loop ──────────────────
+    // ─── goTo — circular buffer teleport ────────────────────
     function goTo(idx, skipAnimation) {
       if (isAnimating && !skipAnimation) return;
       isAnimating = true;
       current = idx;
       applyProgress(!skipAnimation);
 
-      setTimeout(function () {
-        // Бесконечный loop: если попали на клон — мгновенно прыгаем на реальный
-        const STOTAL = TOTAL + 2;
-        if (current === 0) {
-          // Попали на клон последнего — прыгаем на последний реальный
-          current = TOTAL;
+      setTimeout(function() {
+        // Если вышли за левый край клонов — телепортируемся в зеркальную позицию реальных
+        if (current < TOTAL) {
+          current = current + TOTAL;
           applyProgress(false);
-        } else if (current === STOTAL - 1) {
-          // Попали на клон первого — прыгаем на первый реальный
-          current = 1;
+        }
+        // Если вышли за правый край клонов — телепортируемся назад
+        else if (current >= TOTAL * 2) {
+          current = current - TOTAL;
           applyProgress(false);
         }
         isAnimating = false;
       }, skipAnimation ? 0 : SPD + 20);
     }
 
-    // Начальная позиция без анимации
     applyProgress(false);
 
-    // Кнопки
-    btnPrev.addEventListener('click', function () { goTo(current - 1); });
-    btnNext.addEventListener('click', function () { goTo(current + 1); });
+    btnPrev.addEventListener('click', function() { goTo(current - 1); });
+    btnNext.addEventListener('click', function() { goTo(current + 1); });
 
-    // Свайп
     var startX = 0;
-    track.addEventListener('pointerdown', function (e) {
+    track.addEventListener('pointerdown', function(e) {
       e.preventDefault();
       startX = e.clientX;
     });
-    track.addEventListener('pointerup', function (e) {
+    track.addEventListener('pointerup', function(e) {
       var diff = startX - e.clientX;
       if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
     });
 
-    window.addEventListener('resize', function () { applyProgress(false); });
+    window.addEventListener('resize', function() { applyProgress(false); });
   }
 
   // ─── Загрузка данных из Trinity ──────────────────────────
