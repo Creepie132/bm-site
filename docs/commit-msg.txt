@@ -1,8 +1,5 @@
-feat: add RU/HE language switcher with full Hebrew RTL support
+fix: replace Hebrew font Frank Ruhl Libre -> Rubik
 
-- Added lang switcher (RU / HE) in desktop nav and mobile menu
-- Full i18n system via data-i18n attributes and JS translation object
-- Hebrew fonts: Frank Ruhl Libre (display) + Heebo (body)
-- RTL layout via html[data-lang="he"] CSS overrides
-- Language preference saved to localStorage
-- No flags, clean text-only switcher styled in gold
+Rubik looks modern and clean for beauty site.
+Frank Ruhl Libre was too traditional/religious looking.
+Documented: Hebrew font (Rubik) must NOT be changed without explicit owner request.

@@ -72,8 +72,8 @@
 
 /* ── HEBREW FONT VARIABLES (активны только при lang=he) ── */
 html[data-lang="he"] {
-  --ff-display: 'Frank Ruhl Libre', Georgia, serif;
-  --ff-body:    'Heebo', sans-serif;
+  --ff-display: 'Rubik', sans-serif;
+  --ff-body:    'Rubik', sans-serif;
 }
 
 /* ── RTL LAYOUT OVERRIDES ── */
