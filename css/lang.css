@@ -1,0 +1,189 @@
+/* ═══════════════════════════════════════════
+   BEAUTYMANIA — lang.css
+   Language switcher + Hebrew (RTL) styles
+═══════════════════════════════════════════ */
+
+/* ── LANG SWITCHER ── */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 2rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ff-body);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  padding: 0.2rem 0;
+  transition: color var(--transition);
+  position: relative;
+}
+
+.lang-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width var(--transition);
+}
+
+.lang-btn:hover {
+  color: var(--white);
+}
+
+.lang-btn.active {
+  color: var(--gold);
+}
+
+.lang-btn.active::after {
+  width: 100%;
+}
+
+.lang-divider {
+  color: rgba(200, 194, 184, 0.25);
+  font-size: 0.65rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Мобильный lang switcher — внутри мобильного меню */
+.lang-switcher--mobile {
+  margin-left: 0;
+  padding: 1rem 2rem 0.5rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+}
+
+/* На мобиле скрываем десктопный switcher */
+@media (max-width: 768px) {
+  .lang-switcher:not(.lang-switcher--mobile) {
+    display: none;
+  }
+}
+
+/* ── HEBREW FONT VARIABLES (активны только при lang=he) ── */
+html[data-lang="he"] {
+  --ff-display: 'Frank Ruhl Libre', Georgia, serif;
+  --ff-body:    'Heebo', sans-serif;
+}
+
+/* ── RTL LAYOUT OVERRIDES ── */
+html[data-lang="he"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Nav */
+html[data-lang="he"] .nav__inner {
+  flex-direction: row-reverse;
+}
+
+html[data-lang="he"] .nav__links {
+  flex-direction: row-reverse;
+}
+
+html[data-lang="he"] .lang-switcher {
+  margin-left: 0;
+  margin-right: 2rem;
+  flex-direction: row-reverse;
+}
+
+html[data-lang="he"] .nav__burger {
+  margin-left: 0;
+}
+
+/* About grid */
+html[data-lang="he"] .about__grid {
+  direction: rtl;
+}
+
+html[data-lang="he"] .about__text {
+  text-align: right;
+}
+
+html[data-lang="he"] .about__text p {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Blog card tag */
+html[data-lang="he"] .blog-card__tag {
+  left: auto;
+  right: 1rem;
+}
+
+/* Contact grid */
+html[data-lang="he"] .contact__grid {
+  direction: rtl;
+}
+
+html[data-lang="he"] .contact__links {
+  align-items: flex-start;
+}
+
+html[data-lang="he"] .contact__social {
+  flex-direction: row-reverse;
+}
+
+/* Buttons — не инвертируем, они центрированы */
+html[data-lang="he"] .btn {
+  letter-spacing: 0.05em; /* Hebrew не любит большой tracking */
+}
+
+/* Section labels — убираем большой tracking для иврита */
+html[data-lang="he"] .section__label {
+  letter-spacing: 0.05em;
+}
+
+/* Nav links — убираем tracking */
+html[data-lang="he"] .nav__links a,
+html[data-lang="he"] .nav__mobile a {
+  letter-spacing: 0.05em;
+}
+
+/* Collab cards */
+html[data-lang="he"] .collab__inner {
+  direction: rtl;
+}
+
+/* Footer */
+html[data-lang="he"] .footer__inner {
+  direction: rtl;
+  text-align: center; /* footer остаётся по центру */
+}
+
+/* Form inputs — RTL */
+html[data-lang="he"] .form-group input,
+html[data-lang="he"] .form-group select,
+html[data-lang="he"] .form-group textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Hero — центрированный, RTL не нужен */
+html[data-lang="he"] .hero__content {
+  direction: rtl;
+}
+
+/* Mobile menu */
+html[data-lang="he"] .nav__mobile ul {
+  direction: rtl;
+}
+
+html[data-lang="he"] .lang-switcher--mobile {
+  flex-direction: row-reverse;
+}
+
+/* Плавный переход при смене языка */
+body {
+  transition: font-family 0.2s ease;
+}

@@ -1,0 +1,8 @@
+feat: add RU/HE language switcher with full Hebrew RTL support
+
+- Added lang switcher (RU / HE) in desktop nav and mobile menu
+- Full i18n system via data-i18n attributes and JS translation object
+- Hebrew fonts: Frank Ruhl Libre (display) + Heebo (body)
+- RTL layout via html[data-lang="he"] CSS overrides
+- Language preference saved to localStorage
+- No flags, clean text-only switcher styled in gold

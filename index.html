@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" dir="ltr">
+<html lang="ru" dir="ltr" data-lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,11 +7,12 @@
   <meta name="description" content="Красота, мода и косметика. Блог, магазин и рекламные коллаборации." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&family=Heebo:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/lang.css" />
   <link rel="stylesheet" href="css/shop-modal.css" />
 </head>
 <body>
@@ -23,23 +24,33 @@
       <img src="media/logo/Logo_Bm_Trans.png" alt="Beautymania" />
     </a>
     <ul class="nav__links">
-      <li><a href="#about">Обо мне</a></li>
-      <li><a href="#blog">Блог</a></li>
-      <li><a href="/shop">Магазин</a></li>
-      <li><a href="#collab">Реклама</a></li>
-      <li><a href="#contact" class="nav__cta">Контакты</a></li>
+      <li><a href="#about" data-i18n="nav_about">Обо мне</a></li>
+      <li><a href="#blog" data-i18n="nav_blog">Блог</a></li>
+      <li><a href="/shop" data-i18n="nav_shop">Магазин</a></li>
+      <li><a href="#collab" data-i18n="nav_collab">Реклама</a></li>
+      <li><a href="#contact" class="nav__cta" data-i18n="nav_contact">Контакты</a></li>
     </ul>
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-btn active" data-lang="ru">RU</button>
+      <span class="lang-divider">/</span>
+      <button class="lang-btn" data-lang="he">HE</button>
+    </div>
     <button class="nav__burger" id="burger" aria-label="Меню">
       <span></span><span></span><span></span>
     </button>
   </div>
   <div class="nav__mobile" id="mobileMenu">
+    <div class="lang-switcher lang-switcher--mobile">
+      <button class="lang-btn active" data-lang="ru">RU</button>
+      <span class="lang-divider">/</span>
+      <button class="lang-btn" data-lang="he">HE</button>
+    </div>
     <ul>
-      <li><a href="#about">Обо мне</a></li>
-      <li><a href="#blog">Блог</a></li>
-      <li><a href="/shop">Магазин</a></li>
-      <li><a href="#collab">Реклама</a></li>
-      <li><a href="#contact">Контакты</a></li>
+      <li><a href="#about" data-i18n="nav_about">Обо мне</a></li>
+      <li><a href="#blog" data-i18n="nav_blog">Блог</a></li>
+      <li><a href="/shop" data-i18n="nav_shop">Магазин</a></li>
+      <li><a href="#collab" data-i18n="nav_collab">Реклама</a></li>
+      <li><a href="#contact" data-i18n="nav_contact">Контакты</a></li>
     </ul>
   </div>
 </nav>
@@ -51,12 +62,12 @@
   </video>
   <div class="hero__overlay"></div>
   <div class="hero__content">
-    <p class="hero__label">Красота &amp; Мода</p>
+    <p class="hero__label" data-i18n="hero_label">Красота &amp; Мода</p>
     <h1 class="hero__title">Beautymania</h1>
-    <p class="hero__sub">Стиль — это не то, что ты носишь. Это то, как ты живёшь</p>
-    <a href="/shop" class="btn btn--gold">В магазин</a>
+    <p class="hero__sub" data-i18n="hero_sub">Стиль — это не то, что ты носишь. Это то, как ты живёшь</p>
+    <a href="/shop" class="btn btn--gold" data-i18n="hero_btn">В магазин</a>
   </div>
-  <div class="hero__scroll"><span></span><p>Листать</p></div>
+  <div class="hero__scroll"><span></span><p data-i18n="hero_scroll">Листать</p></div>
 </section>
 
 <!-- ABOUT -->
@@ -72,15 +83,15 @@
       </div>
     </div>
     <div class="about__text">
-      <p class="section__label">Знакомьтесь</p>
-      <h2 class="section__title">Привет, я — <em>Анета</em></h2>
-      <p>Бьюти-эксперт, любительница моды и контент-мейкер из Израиля. Делюсь страстью к косметике, уходу за кожей и стилю с тысячами подписчиков, которые доверяют моим честным обзорам и смелой эстетике.</p>
+      <p class="section__label" data-i18n="about_label">Знакомьтесь</p>
+      <h2 class="section__title" data-i18n="about_title">Привет, я — <em>Анета</em></h2>
+      <p data-i18n="about_desc">Бьюти-эксперт, любительница моды и контент-мейкер из Израиля. Делюсь страстью к косметике, уходу за кожей и стилю с тысячами подписчиков, которые доверяют моим честным обзорам и смелой эстетике.</p>
       <div class="about__stats">
         <div class="stat"><span class="stat__num">20к+</span><span class="stat__label">Instagram</span></div>
         <div class="stat"><span class="stat__num">12к+</span><span class="stat__label">Facebook</span></div>
-        <div class="stat"><span class="stat__num">100%</span><span class="stat__label">Честно</span></div>
+        <div class="stat"><span class="stat__num">100%</span><span class="stat__label" data-i18n="about_honest">Честно</span></div>
       </div>
-      <a href="#contact" class="btn btn--outline">Сотрудничество</a>
+      <a href="#contact" class="btn btn--outline" data-i18n="about_cta">Сотрудничество</a>
     </div>
   </div>
 </section>
@@ -88,41 +99,41 @@
 <!-- BLOG -->
 <section class="blog section" id="blog">
   <div class="container">
-    <p class="section__label">Последние записи</p>
-    <h2 class="section__title">Из блога</h2>
+    <p class="section__label" data-i18n="blog_label">Последние записи</p>
+    <h2 class="section__title" data-i18n="blog_title">Из блога</h2>
     <div class="blog__grid">
       <article class="blog-card blog-card--featured">
         <div class="blog-card__img">
           <img src="media/img/IMG-20260226-WA0006.jpg" alt="Пост" />
-          <span class="blog-card__tag">Уход за кожей</span>
+          <span class="blog-card__tag" data-i18n="blog1_tag">Уход за кожей</span>
         </div>
         <div class="blog-card__body">
-          <p class="blog-card__date">Февраль 2026</p>
-          <h3>Мой утренний ритуал сияния — 5 шагов, которым я не изменяю</h3>
-          <p>Просыпаться с сияющей кожей — это не магия, а ритуал. Вот 5 продуктов, которые изменили мои утра...</p>
-          <a href="#" class="link-arrow">Читать далее →</a>
+          <p class="blog-card__date" data-i18n="blog1_date">Февраль 2026</p>
+          <h3 data-i18n="blog1_title">Мой утренний ритуал сияния — 5 шагов, которым я не изменяю</h3>
+          <p data-i18n="blog1_desc">Просыпаться с сияющей кожей — это не магия, а ритуал. Вот 5 продуктов, которые изменили мои утра...</p>
+          <a href="#" class="link-arrow" data-i18n="blog_read">Читать далее →</a>
         </div>
       </article>
       <article class="blog-card">
         <div class="blog-card__img">
           <img src="media/img/IMG-20260226-WA0007.jpg" alt="Пост" />
-          <span class="blog-card__tag">Мода</span>
+          <span class="blog-card__tag" data-i18n="blog2_tag">Мода</span>
         </div>
         <div class="blog-card__body">
-          <p class="blog-card__date">Январь 2026</p>
-          <h3>Чёрный — это всегда новый чёрный</h3>
-          <a href="#" class="link-arrow">Читать далее →</a>
+          <p class="blog-card__date" data-i18n="blog2_date">Январь 2026</p>
+          <h3 data-i18n="blog2_title">Чёрный — это всегда новый чёрный</h3>
+          <a href="#" class="link-arrow" data-i18n="blog_read">Читать далее →</a>
         </div>
       </article>
       <article class="blog-card">
         <div class="blog-card__img">
           <img src="media/img/IMG-20260226-WA0009.jpg" alt="Пост" />
-          <span class="blog-card__tag">Макияж</span>
+          <span class="blog-card__tag" data-i18n="blog3_tag">Макияж</span>
         </div>
         <div class="blog-card__body">
-          <p class="blog-card__date">Декабрь 2025</p>
-          <h3>Праздничный гламур: золото и эффектные образы</h3>
-          <a href="#" class="link-arrow">Читать далее →</a>
+          <p class="blog-card__date" data-i18n="blog3_date">Декабрь 2025</p>
+          <h3 data-i18n="blog3_title">Праздничный гламур: золото и эффектные образы</h3>
+          <a href="#" class="link-arrow" data-i18n="blog_read">Читать далее →</a>
         </div>
       </article>
     </div>
@@ -132,11 +143,11 @@
 <!-- SHOP PREVIEW — 4 рандомных товара -->
 <section class="shop section" id="shop">
   <div class="container">
-    <p class="section__label">Бьюти-эссенциалы</p>
-    <h2 class="section__title">Магазин <em>Анеты</em></h2>
+    <p class="section__label" data-i18n="shop_label">Бьюти-эссенциалы</p>
+    <h2 class="section__title" data-i18n="shop_title">Магазин <em>Анеты</em></h2>
     <div class="shop__grid" id="shopGrid"></div>
     <div class="shop__cta">
-      <a href="/shop" class="btn btn--gold">Весь магазин →</a>
+      <a href="/shop" class="btn btn--gold" data-i18n="shop_cta">Весь магазин →</a>
     </div>
   </div>
 </section>
@@ -144,8 +155,8 @@
 <!-- BESTSELLERS CAROUSEL -->
 <section class="bm-carousel-section section" id="bestsellers">
   <div class="container">
-    <p class="section__label">Бьюти-коллекция</p>
-    <h2 class="section__title">Наши <em>бестселлеры</em></h2>
+    <p class="section__label" data-i18n="bs_label">Бьюти-коллекция</p>
+    <h2 class="section__title" data-i18n="bs_title">Наши <em>бестселлеры</em></h2>
   </div>
   <div class="bm-carousel-outer" id="bmOuter">
     <div class="bm-swiper-wrap">
@@ -154,9 +165,9 @@
       </div>
     </div>
     <div class="bm-nav">
-      <button class="bm-btn bm-prev" id="bmPrev" disabled><span>← Назад</span></button>
+      <button class="bm-btn bm-prev" id="bmPrev" disabled><span data-i18n="carousel_prev">← Назад</span></button>
       <div class="bm-dots" id="bmDots"></div>
-      <button class="bm-btn bm-next" id="bmNext"><span>Вперёд →</span></button>
+      <button class="bm-btn bm-next" id="bmNext"><span data-i18n="carousel_next">Вперёд →</span></button>
     </div>
   </div>
 </section>
@@ -164,8 +175,8 @@
 <!-- GALLERY -->
 <section class="gallery section">
   <div class="container">
-    <p class="section__label">Визуал</p>
-    <h2 class="section__title">Галерея</h2>
+    <p class="section__label" data-i18n="gallery_label">Визуал</p>
+    <h2 class="section__title" data-i18n="gallery_title">Галерея</h2>
   </div>
   <div class="gallery__track-wrapper">
     <div class="gallery__strip" id="galleryStrip">
@@ -191,26 +202,26 @@
 <section class="collab section" id="collab">
   <div class="collab__bg"></div>
   <div class="container collab__inner">
-    <p class="section__label section__label--light">Реклама &amp; Партнёрство</p>
-    <h2 class="section__title section__title--light">Создадим что-то <em>вместе</em></h2>
-    <p class="collab__desc">Я сотрудничаю с бьюти-брендами, модными марками и лайфстайл-компаниями — создаю аутентичный спонсорский контент, обзоры продуктов и рекламные истории, которые находят отклик у моей аудитории.</p>
+    <p class="section__label section__label--light" data-i18n="collab_label">Реклама &amp; Партнёрство</p>
+    <h2 class="section__title section__title--light" data-i18n="collab_title">Создадим что-то <em>вместе</em></h2>
+    <p class="collab__desc" data-i18n="collab_desc">Я сотрудничаю с бьюти-брендами, модными марками и лайфстайл-компаниями — создаю аутентичный спонсорский контент, обзоры продуктов и рекламные истории, которые находят отклик у моей аудитории.</p>
     <div class="collab__cards">
-      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Спонсорские посты</h4><p>Размещения в Instagram и Facebook с искренним сторителлингом</p></div>
-      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Обзоры продуктов</h4><p>Честные, детальные отзывы, которым доверяет моя аудитория</p></div>
-      <div class="collab-card"><div class="collab-card__icon">✦</div><h4>Бренд-кампании</h4><p>Полное творческое руководство, фотография и видеоконтент</p></div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4 data-i18n="collab_card1_title">Спонсорские посты</h4><p data-i18n="collab_card1_desc">Размещения в Instagram и Facebook с искренним сторителлингом</p></div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4 data-i18n="collab_card2_title">Обзоры продуктов</h4><p data-i18n="collab_card2_desc">Честные, детальные отзывы, которым доверяет моя аудитория</p></div>
+      <div class="collab-card"><div class="collab-card__icon">✦</div><h4 data-i18n="collab_card3_title">Бренд-кампании</h4><p data-i18n="collab_card3_desc">Полное творческое руководство, фотография и видеоконтент</p></div>
     </div>
-    <a href="#contact" class="btn btn--gold">Написать мне</a>
+    <a href="#contact" class="btn btn--gold" data-i18n="collab_cta">Написать мне</a>
   </div>
 </section>
 
 <!-- CONTACT -->
 <section class="contact section" id="contact">
   <div class="container contact__inner">
-    <p class="section__label">Давайте пообщаемся</p>
-    <h2 class="section__title">Написать <em>Анете</em></h2>
+    <p class="section__label" data-i18n="contact_label">Давайте пообщаемся</p>
+    <h2 class="section__title" data-i18n="contact_title">Написать <em>Анете</em></h2>
     <div class="contact__grid">
       <div class="contact__info">
-        <p>По заказам из магазина, рекламным запросам или просто поздороваться — буду рада вашему сообщению.</p>
+        <p data-i18n="contact_desc">По заказам из магазина, рекламным запросам или просто поздороваться — буду рада вашему сообщению.</p>
         <div class="contact__links">
           <a href="https://www.instagram.com/anetta_mari/" target="_blank" class="contact__social">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
@@ -223,20 +234,20 @@
         </div>
       </div>
       <form class="contact__form" id="contactForm">
-        <div class="form-group"><input type="text" id="formName" placeholder="Ваше имя" required /></div>
-        <div class="form-group"><input type="email" id="formEmail" placeholder="Электронная почта" required /></div>
+        <div class="form-group"><input type="text" id="formName" data-i18n-placeholder="form_name" placeholder="Ваше имя" required /></div>
+        <div class="form-group"><input type="email" id="formEmail" data-i18n-placeholder="form_email" placeholder="Электронная почта" required /></div>
         <div class="form-group">
           <select id="formSubject">
-            <option value="">Тема обращения...</option>
-            <option>Заказ из магазина</option>
-            <option>Реклама / Коллаборация</option>
-            <option>Общий вопрос</option>
+            <option value="" data-i18n="form_subject_default">Тема обращения...</option>
+            <option data-i18n="form_subject_order">Заказ из магазина</option>
+            <option data-i18n="form_subject_collab">Реклама / Коллаборация</option>
+            <option data-i18n="form_subject_other">Общий вопрос</option>
           </select>
         </div>
-        <div class="form-group"><textarea id="formMessage" placeholder="Ваше сообщение..." rows="4" required></textarea></div>
-        <button type="submit" class="btn btn--gold btn--full" id="formBtn">Отправить сообщение</button>
-        <p class="form__success" id="formSuccess">✓ Сообщение отправлено! Скоро свяжусь с вами.</p>
-        <p class="form__error" id="formError">Ошибка отправки. Попробуйте ещё раз.</p>
+        <div class="form-group"><textarea id="formMessage" data-i18n-placeholder="form_message" placeholder="Ваше сообщение..." rows="4" required></textarea></div>
+        <button type="submit" class="btn btn--gold btn--full" id="formBtn" data-i18n="form_submit">Отправить сообщение</button>
+        <p class="form__success" id="formSuccess" data-i18n="form_success">✓ Сообщение отправлено! Скоро свяжусь с вами.</p>
+        <p class="form__error" id="formError" data-i18n="form_error">Ошибка отправки. Попробуйте ещё раз.</p>
       </form>
     </div>
   </div>
@@ -246,8 +257,8 @@
 <footer class="footer">
   <div class="container footer__inner">
     <img src="media/logo/Logo_Bm_Trans.png" alt="Beautymania" class="footer__logo" />
-    <p class="footer__copy">© 2026 Beautymania by Aneta. Все права защищены.</p>
-    <p class="footer__credit">Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a></p>
+    <p class="footer__copy" data-i18n="footer_copy">© 2026 Beautymania by Aneta. Все права защищены.</p>
+    <p class="footer__credit" data-i18n="footer_credit">Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a></p>
   </div>
 </footer>
 <script src="js/main.js"></script>

@@ -1,3 +1,190 @@
+// ═══════════════════════════════════════════════════════════════
+// BEAUTYMANIA — i18n (RU / HE)
+// ═══════════════════════════════════════════════════════════════
+;(function () {
+  const TRANSLATIONS = {
+    ru: {
+      nav_about:          'Обо мне',
+      nav_blog:           'Блог',
+      nav_shop:           'Магазин',
+      nav_collab:         'Реклама',
+      nav_contact:        'Контакты',
+      hero_label:         'Красота & Мода',
+      hero_sub:           'Стиль — это не то, что ты носишь. Это то, как ты живёшь',
+      hero_btn:           'В магазин',
+      hero_scroll:        'Листать',
+      about_label:        'Знакомьтесь',
+      about_title:        'Привет, я — <em>Анета</em>',
+      about_desc:         'Бьюти-эксперт, любительница моды и контент-мейкер из Израиля. Делюсь страстью к косметике, уходу за кожей и стилю с тысячами подписчиков, которые доверяют моим честным обзорам и смелой эстетике.',
+      about_honest:       'Честно',
+      about_cta:          'Сотрудничество',
+      blog_label:         'Последние записи',
+      blog_title:         'Из блога',
+      blog1_tag:          'Уход за кожей',
+      blog1_date:         'Февраль 2026',
+      blog1_title:        'Мой утренний ритуал сияния — 5 шагов, которым я не изменяю',
+      blog1_desc:         'Просыпаться с сияющей кожей — это не магия, а ритуал. Вот 5 продуктов, которые изменили мои утра...',
+      blog_read:          'Читать далее →',
+      blog2_tag:          'Мода',
+      blog2_date:         'Январь 2026',
+      blog2_title:        'Чёрный — это всегда новый чёрный',
+      blog3_tag:          'Макияж',
+      blog3_date:         'Декабрь 2025',
+      blog3_title:        'Праздничный гламур: золото и эффектные образы',
+      shop_label:         'Бьюти-эссенциалы',
+      shop_title:         'Магазин <em>Анеты</em>',
+      shop_cta:           'Весь магазин →',
+      bs_label:           'Бьюти-коллекция',
+      bs_title:           'Наши <em>бестселлеры</em>',
+      carousel_prev:      '← Назад',
+      carousel_next:      'Вперёд →',
+      gallery_label:      'Визуал',
+      gallery_title:      'Галерея',
+      collab_label:       'Реклама & Партнёрство',
+      collab_title:       'Создадим что-то <em>вместе</em>',
+      collab_desc:        'Я сотрудничаю с бьюти-брендами, модными марками и лайфстайл-компаниями — создаю аутентичный спонсорский контент, обзоры продуктов и рекламные истории, которые находят отклик у моей аудитории.',
+      collab_card1_title: 'Спонсорские посты',
+      collab_card1_desc:  'Размещения в Instagram и Facebook с искренним сторителлингом',
+      collab_card2_title: 'Обзоры продуктов',
+      collab_card2_desc:  'Честные, детальные отзывы, которым доверяет моя аудитория',
+      collab_card3_title: 'Бренд-кампании',
+      collab_card3_desc:  'Полное творческое руководство, фотография и видеоконтент',
+      collab_cta:         'Написать мне',
+      contact_label:      'Давайте пообщаемся',
+      contact_title:      'Написать <em>Анете</em>',
+      contact_desc:       'По заказам из магазина, рекламным запросам или просто поздороваться — буду рада вашему сообщению.',
+      form_name:          'Ваше имя',
+      form_email:         'Электронная почта',
+      form_subject_default: 'Тема обращения...',
+      form_subject_order: 'Заказ из магазина',
+      form_subject_collab:'Реклама / Коллаборация',
+      form_subject_other: 'Общий вопрос',
+      form_message:       'Ваше сообщение...',
+      form_submit:        'Отправить сообщение',
+      form_success:       '✓ Сообщение отправлено! Скоро свяжусь с вами.',
+      form_error:         'Ошибка отправки. Попробуйте ещё раз.',
+      footer_copy:        '© 2026 Beautymania by Aneta. Все права защищены.',
+      footer_credit:      'Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a>',
+    },
+    he: {
+      nav_about:          'עליי',
+      nav_blog:           'בלוג',
+      nav_shop:           'חנות',
+      nav_collab:         'שיתופי פעולה',
+      nav_contact:        'צרו קשר',
+      hero_label:         'יופי & אופנה',
+      hero_sub:           'סטייל זה לא מה שאת לובשת. זה איך שאת חיה',
+      hero_btn:           'לחנות',
+      hero_scroll:        'גלול',
+      about_label:        'הכירו אותי',
+      about_title:        'שלום, אני — <em>אנטה</em>',
+      about_desc:         'מומחית יופי, אוהבת אופנה ויוצרת תוכן מישראל. משתפת את התשוקה לקוסמטיקה, טיפוח העור וסטייל עם אלפי עוקבים שסומכים על הביקורות הכנות שלי.',
+      about_honest:       'כנה 100%',
+      about_cta:          'שיתוף פעולה',
+      blog_label:         'פוסטים אחרונים',
+      blog_title:         'מהבלוג',
+      blog1_tag:          'טיפוח העור',
+      blog1_date:         'פברואר 2026',
+      blog1_title:        'הטקס הבוקרי שלי לזוהר — 5 צעדים שאני לא מוותרת עליהם',
+      blog1_desc:         'להתעורר עם עור זוהר זה לא קסם — זה טקס. הנה 5 מוצרים שינו את הבוקרים שלי...',
+      blog_read:          'קרא עוד ←',
+      blog2_tag:          'אופנה',
+      blog2_date:         'ינואר 2026',
+      blog2_title:        'שחור הוא תמיד השחור החדש',
+      blog3_tag:          'איפור',
+      blog3_date:         'דצמבר 2025',
+      blog3_title:        'גלאם לחגים: זהב ולוקים מרשימים',
+      shop_label:         'אסנציאלים ליופי',
+      shop_title:         'חנות <em>אנטה</em>',
+      shop_cta:           'לכל החנות ←',
+      bs_label:           'קולקציית יופי',
+      bs_title:           '<em>הנמכרים ביותר</em> שלנו',
+      carousel_prev:      '→ הקודם',
+      carousel_next:      'הבא ←',
+      gallery_label:      'ויזואל',
+      gallery_title:      'גלריה',
+      collab_label:       'פרסום & שיתוף פעולה',
+      collab_title:       'ניצור משהו <em>יחד</em>',
+      collab_desc:        'אני משתפת פעולה עם מותגי יופי, אופנה וחברות לייפסטייל — יוצרת תוכן ממומן אותנטי, ביקורות מוצרים וסיפורי מותג שמהדהדים עם הקהל שלי.',
+      collab_card1_title: 'פוסטים ממומנים',
+      collab_card1_desc:  'פרסומים באינסטגרם ופייסבוק עם סיפור אמיתי ואותנטי',
+      collab_card2_title: 'ביקורות מוצרים',
+      collab_card2_desc:  'ביקורות כנות ומפורטות שהקהל שלי סומך עליהן',
+      collab_card3_title: 'קמפיינים למותגים',
+      collab_card3_desc:  'הובלה יצירתית מלאה, צילום ותוכן וידאו',
+      collab_cta:         'כתבי לי',
+      contact_label:      'בואו נדבר',
+      contact_title:      'כתבי ל<em>אנטה</em>',
+      contact_desc:       'להזמנות מהחנות, פניות לשיתוף פעולה או סתם להגיד שלום — אשמח לשמוע ממך.',
+      form_name:          'השם שלך',
+      form_email:         'כתובת מייל',
+      form_subject_default: 'נושא הפנייה...',
+      form_subject_order: 'הזמנה מהחנות',
+      form_subject_collab:'פרסום / שיתוף פעולה',
+      form_subject_other: 'שאלה כללית',
+      form_message:       'ההודעה שלך...',
+      form_submit:        'שליחת הודעה',
+      form_success:       '✓ ההודעה נשלחה! אחזור אלייך בקרוב.',
+      form_error:         'שגיאה בשליחה. נסי שוב.',
+      footer_copy:        '© 2026 Beautymania by Aneta. כל הזכויות שמורות.',
+      footer_credit:      'נוצר עם ♥ על ידי <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a>',
+    }
+  };
+
+  function applyTranslations(lang) {
+    const t = TRANSLATIONS[lang];
+    if (!t) return;
+
+    // data-i18n → innerHTML
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+
+    // data-i18n-placeholder → placeholder attribute
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+
+    // <html> lang + dir + data-lang
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('data-lang', lang);
+
+    // title
+    document.title = lang === 'he'
+      ? 'Beautymania — יופי ואופנה עם אנטה'
+      : 'Beautymania — Красота и Мода с Анетой';
+
+    // active button state — обновляем все копии кнопок (desktop + mobile)
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+
+    // Сохраняем выбор
+    try { localStorage.setItem('bm_lang', lang); } catch (_) {}
+  }
+
+  function initLang() {
+    // Читаем сохранённый язык
+    var saved = '';
+    try { saved = localStorage.getItem('bm_lang') || ''; } catch (_) {}
+    var lang = (saved === 'he' || saved === 'ru') ? saved : 'ru';
+    applyTranslations(lang);
+  }
+
+  // Вешаем обработчики на ВСЕ кнопки языка (desktop + mobile)
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      applyTranslations(btn.getAttribute('data-lang'));
+    });
+  });
+
+  // Инициализируем
+  initLang();
+})();
+
 // ─── Config ──────────────────────────────────────────────────
 const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
