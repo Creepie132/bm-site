@@ -120,8 +120,20 @@ html[data-lang="he"] {
   unicode-range: U+0590-05FF, U+FB1D-FB4F;
 }
 
-/* ── RTL LAYOUT OVERRIDES ── */
+/* ── HEBREW FONT SIZE COMPENSATION ──
+   Assistant визуально меньше Cormorant Garamond — выравниваем размеры */
+html[data-lang="he"] .section__title {
+  font-size: clamp(2.8rem, 5.5vw, 4.4rem);
+}
+html[data-lang="he"] .hero__sub {
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+}
+html[data-lang="he"] .hero__label,
+html[data-lang="he"] .section__label {
+  font-size: 0.78rem;
+}
 html[data-lang="he"] body {
+  font-size: 1.05rem;
   direction: rtl;
   text-align: right;
 }
