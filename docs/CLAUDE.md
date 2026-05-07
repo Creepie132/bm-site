@@ -83,14 +83,13 @@ bm_site/
 **Типографика:**
 - Заголовки: Cormorant Garamond (Google Fonts, serif)
 - Текст: Montserrat (Google Fonts, sans-serif)
-- Иврит (HE): заголовки — `Cormorant Garamond` + `Rubik` (font stack), текст — `Rubik`
+- Иврит (HE): заголовки — `Noto Serif Hebrew` (serif, элегантный), текст — `Rubik`
 
 > ⚠️ **ПРАВИЛО ШРИФТОВ — НЕЛЬЗЯ НАРУШАТЬ:**
-> На иврите `--ff-display: 'Cormorant Garamond', 'Rubik', Georgia, serif` — латиница/кириллица
-> в заголовках отображается через Cormorant Garamond, ивритские символы — через Rubik как fallback.
-> `--ff-body` на иврите остаётся `Rubik`. Менять ЗАПРЕЩЕНО без явной просьбы Влада.
+> На иврите `--ff-display: 'Noto Serif Hebrew', 'Cormorant Garamond', Georgia, serif`
+> `--ff-body` на иврите — `Rubik`. Менять ЗАПРЕЩЕНО без явной просьбы Влада.
 > Frank Ruhl Libre и Heebo — удалены намеренно (выглядели "религиозно").
-> Rubik для иврита — финальное решение, согласованное с владельцем.
+> Noto Serif Hebrew — финальное решение, согласованное с владельцем.
 
 **Компоненты:**
 - Hero: fullscreen видео с двумя клипами (чередование через JS)
@@ -444,6 +443,20 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 ---
 
 ## 18. История изменений
+
+### 07.05.2026 (6)
+
+**Commit 0d4f677 (bm-site)** — feat: Noto Serif Hebrew for display headings in Hebrew mode
+
+**Задача:** Заголовки на иврите выглядели неэлегантно — нужен serif-шрифт аналогичный по духу Cormorant Garamond.
+
+**Решение:**
+- `index.html`, `shop/index.html` — добавлен `Noto Serif Hebrew:wght@300;400;600` в Google Fonts link
+- `css/lang.css` — `--ff-display` при `lang=he` изменён на `'Noto Serif Hebrew', 'Cormorant Garamond', Georgia, serif`. Noto Serif Hebrew — элегантный ивритский serif, `--ff-body` остаётся `Rubik`.
+
+**Затронутые файлы:** `index.html`, `shop/index.html`, `css/lang.css`
+
+---
 
 ### 07.05.2026 (5)
 
