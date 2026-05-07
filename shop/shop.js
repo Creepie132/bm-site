@@ -1,3 +1,118 @@
+// ═══════════════════════════════════════════════════════════════
+// BEAUTYMANIA SHOP — i18n (RU / HE)
+// Синхронизирован с main.js — один ключ 'bm_lang' в localStorage
+// ═══════════════════════════════════════════════════════════════
+;(function () {
+  const TRANSLATIONS = {
+    ru: {
+      nav_about:    'Обо мне',
+      nav_blog:     'Блог',
+      nav_shop:     'Магазин',
+      nav_collab:   'Реклама',
+      nav_contact:  'Контакты',
+      shop_label:   'Бьюти-эссенциалы',
+      shop_title:   'Магазин <em>Анеты</em>',
+      shop_subtitle:'Только проверенные продукты, которым я доверяю сама',
+      filter_all:   'Все',
+      search_placeholder: 'Поиск товаров...',
+      sort_default:    'По умолчанию',
+      sort_price_asc:  'Цена: возрастание',
+      sort_price_desc: 'Цена: убывание',
+      sort_name:       'По названию',
+      shop_loading:  'Загружаем товары',
+      load_more:     'Загрузить ещё',
+      cart_title:    'Корзина',
+      cart_empty:    'Корзина пуста',
+      cart_total:    'Итого',
+      cart_checkout: 'Оформить заказ',
+      checkout_title:'Оформление заказа',
+      form_name:     'Ваше имя',
+      form_email:    'Email',
+      co_phone:      'Телефон',
+      co_message:    'Адрес доставки / комментарий...',
+      co_submit:     'Подтвердить заказ',
+      co_success:    '✓ Заказ принят! Анета свяжется с вами в ближайшее время.',
+      co_error:      'Ошибка отправки. Попробуйте ещё раз.',
+      footer_copy:   '© 2026 Beautymania by Aneta. Все права защищены.',
+      footer_credit: 'Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a>',
+    },
+    he: {
+      nav_about:    'עליי',
+      nav_blog:     'בלוג',
+      nav_shop:     'חנות',
+      nav_collab:   'שיתופי פעולה',
+      nav_contact:  'צרו קשר',
+      shop_label:   'אסנציאלים ליופי',
+      shop_title:   'חנות <em>אנטה</em>',
+      shop_subtitle:'רק מוצרים מוכחים שאני סומכת עליהם בעצמי',
+      filter_all:   'הכל',
+      search_placeholder: 'חיפוש מוצרים...',
+      sort_default:    'ברירת מחדל',
+      sort_price_asc:  'מחיר: עולה',
+      sort_price_desc: 'מחיר: יורד',
+      sort_name:       'לפי שם',
+      shop_loading:  'טוענים מוצרים',
+      load_more:     'טען עוד',
+      cart_title:    'עגלת קניות',
+      cart_empty:    'העגלה ריקה',
+      cart_total:    'סה"כ',
+      cart_checkout: 'לתשלום',
+      checkout_title:'פרטי הזמנה',
+      form_name:     'השם שלך',
+      form_email:    'כתובת מייל',
+      co_phone:      'טלפון',
+      co_message:    'כתובת למשלוח / הערה...',
+      co_submit:     'אישור הזמנה',
+      co_success:    '✓ ההזמנה התקבלה! אנטה תיצור איתך קשר בקרוב.',
+      co_error:      'שגיאה בשליחה. נסה שוב.',
+      footer_copy:   '© 2026 Beautymania by Aneta. כל הזכויות שמורות.',
+      footer_credit: 'נוצר עם ♥ על ידי <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a>',
+    }
+  };
+
+  function applyTranslations(lang) {
+    const t = TRANSLATIONS[lang];
+    if (!t) return;
+
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('data-lang', lang);
+
+    document.title = lang === 'he' ? 'חנות — Beautymania' : 'Магазин — Beautymania';
+
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+    });
+
+    try { localStorage.setItem('bm_lang', lang); } catch (_) {}
+  }
+
+  function initLang() {
+    var saved = '';
+    try { saved = localStorage.getItem('bm_lang') || ''; } catch (_) {}
+    var lang = (saved === 'he' || saved === 'ru') ? saved : 'ru';
+    applyTranslations(lang);
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      applyTranslations(btn.getAttribute('data-lang'));
+    });
+  });
+
+  initLang();
+})();
+
 // ─── Config ──────────────────────────────────────────────────
 const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
 const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order'

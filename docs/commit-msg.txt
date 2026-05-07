@@ -1,5 +1,7 @@
-fix: replace Hebrew font Frank Ruhl Libre -> Rubik
+feat: add RU/HE language switcher to shop page
 
-Rubik looks modern and clean for beauty site.
-Frank Ruhl Libre was too traditional/religious looking.
-Documented: Hebrew font (Rubik) must NOT be changed without explicit owner request.
+- Added lang switcher (RU / HE) in shop nav (desktop + mobile)
+- Full i18n for shop: header, filters, search, sort, cart, checkout, footer
+- Rubik font added for Hebrew on shop page
+- Language synced via localStorage bm_lang key (same as main page)
+- RTL layout applied via shared lang.css

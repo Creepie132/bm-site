@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" dir="ltr">
+<html lang="ru" dir="ltr" data-lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,11 +13,12 @@
   <link rel="canonical" href="https://beautymania.co.il/shop" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/lang.css" />
   <link rel="stylesheet" href="/shop/shop.css" />
 </head>
 <body>
@@ -29,13 +30,18 @@
       <img src="/media/logo/Logo_Bm_Trans.png" alt="Beautymania" />
     </a>
     <ul class="nav__links">
-      <li><a href="/#about">Обо мне</a></li>
-      <li><a href="/#blog">Блог</a></li>
-      <li><a href="/shop" class="active">Магазин</a></li>
-      <li><a href="/#collab">Реклама</a></li>
-      <li><a href="/#contact" class="nav__cta">Контакты</a></li>
+      <li><a href="/#about" data-i18n="nav_about">Обо мне</a></li>
+      <li><a href="/#blog" data-i18n="nav_blog">Блог</a></li>
+      <li><a href="/shop" class="active" data-i18n="nav_shop">Магазин</a></li>
+      <li><a href="/#collab" data-i18n="nav_collab">Реклама</a></li>
+      <li><a href="/#contact" class="nav__cta" data-i18n="nav_contact">Контакты</a></li>
     </ul>
     <div class="nav__right">
+      <div class="lang-switcher" id="langSwitcher">
+        <button class="lang-btn active" data-lang="ru">RU</button>
+        <span class="lang-divider">/</span>
+        <button class="lang-btn" data-lang="he">HE</button>
+      </div>
       <button class="cart-btn" id="cartBtn" aria-label="Корзина">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
           <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -50,12 +56,17 @@
     </div>
   </div>
   <div class="nav__mobile" id="mobileMenu">
+    <div class="lang-switcher lang-switcher--mobile">
+      <button class="lang-btn active" data-lang="ru">RU</button>
+      <span class="lang-divider">/</span>
+      <button class="lang-btn" data-lang="he">HE</button>
+    </div>
     <ul>
-      <li><a href="/#about">Обо мне</a></li>
-      <li><a href="/#blog">Блог</a></li>
-      <li><a href="/shop">Магазин</a></li>
-      <li><a href="/#collab">Реклама</a></li>
-      <li><a href="/#contact">Контакты</a></li>
+      <li><a href="/#about" data-i18n="nav_about">Обо мне</a></li>
+      <li><a href="/#blog" data-i18n="nav_blog">Блог</a></li>
+      <li><a href="/shop" data-i18n="nav_shop">Магазин</a></li>
+      <li><a href="/#collab" data-i18n="nav_collab">Реклама</a></li>
+      <li><a href="/#contact" data-i18n="nav_contact">Контакты</a></li>
     </ul>
   </div>
 </nav>
@@ -63,9 +74,9 @@
 <!-- HEADER -->
 <header class="shop-header">
   <div class="container">
-    <p class="section__label">Бьюти-эссенциалы</p>
-    <h1 class="section__title">Магазин <em>Анеты</em></h1>
-    <p class="shop-header__sub">Только проверенные продукты, которым я доверяю сама</p>
+    <p class="section__label" data-i18n="shop_label">Бьюти-эссенциалы</p>
+    <h1 class="section__title" data-i18n="shop_title">Магазин <em>Анеты</em></h1>
+    <p class="shop-header__sub" data-i18n="shop_subtitle">Только проверенные продукты, которым я доверяю сама</p>
   </div>
 </header>
 
@@ -74,21 +85,21 @@
   <div class="container">
     <div class="shop-toolbar">
       <div class="shop-filters" id="shopFilters">
-        <button class="filter-chip active" data-cat="all">Все</button>
+        <button class="filter-chip active" data-cat="all" data-i18n="filter_all">Все</button>
       </div>
       <div class="shop-toolbar__right">
         <div class="shop-search">
           <svg class="shop-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="15" height="15">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="search" id="shopSearch" class="shop-search__input" placeholder="Поиск товаров..." autocomplete="off" />
+          <input type="search" id="shopSearch" class="shop-search__input" data-i18n-placeholder="search_placeholder" placeholder="Поиск товаров..." autocomplete="off" />
         </div>
         <div class="shop-sort">
           <select id="sortSelect">
-            <option value="default">По умолчанию</option>
-            <option value="price_asc">Цена: возрастание</option>
-            <option value="price_desc">Цена: убывание</option>
-            <option value="name_asc">По названию</option>
+            <option value="default" data-i18n="sort_default">По умолчанию</option>
+            <option value="price_asc" data-i18n="sort_price_asc">Цена: возрастание</option>
+            <option value="price_desc" data-i18n="sort_price_desc">Цена: убывание</option>
+            <option value="name_asc" data-i18n="sort_name">По названию</option>
           </select>
         </div>
       </div>
@@ -96,11 +107,11 @@
     <div class="shop-grid" id="shopGrid">
       <div class="shop-loading">
         <div class="shop-loading__spinner"></div>
-        <span>Загружаем товары</span>
+        <span data-i18n="shop_loading">Загружаем товары</span>
       </div>
     </div>
     <div class="shop-load-more">
-      <button class="btn btn--outline" id="loadMoreBtn" style="display:none">Загрузить ещё</button>
+      <button class="btn btn--outline" id="loadMoreBtn" style="display:none" data-i18n="load_more">Загрузить ещё</button>
     </div>
   </div>
 </main>
@@ -109,7 +120,7 @@
 <div class="cart-overlay" id="cartOverlay"></div>
 <aside class="cart-sidebar" id="cartSidebar">
   <div class="cart-sidebar__head">
-    <h3>Корзина</h3>
+    <h3 data-i18n="cart_title">Корзина</h3>
     <button class="cart-sidebar__close" id="cartClose">✕</button>
   </div>
   <div class="cart-sidebar__body" id="cartBody">
@@ -119,17 +130,17 @@
         <line x1="3" y1="6" x2="21" y2="6"/>
         <path d="M16 10a4 4 0 01-8 0"/>
       </svg>
-      <span>Корзина пуста</span>
+      <span data-i18n="cart_empty">Корзина пуста</span>
     </div>
     <div id="cartItems"></div>
     <div id="crossSellBlock"></div>
   </div>
   <div class="cart-sidebar__foot">
     <div class="cart-total">
-      <span>Итого</span>
+      <span data-i18n="cart_total">Итого</span>
       <span id="cartTotal">₪0</span>
     </div>
-    <button class="btn btn--gold btn--full" id="checkoutBtn">Оформить заказ</button>
+    <button class="btn btn--gold btn--full" id="checkoutBtn" data-i18n="cart_checkout">Оформить заказ</button>
   </div>
 </aside>
 
@@ -138,18 +149,18 @@
   <div class="checkout-modal__backdrop" id="checkoutBackdrop"></div>
   <div class="checkout-modal__box">
     <div class="checkout-modal__head">
-      <p class="section__label" style="margin-bottom:.3rem">Оформление заказа</p>
+      <p class="section__label" style="margin-bottom:.3rem" data-i18n="checkout_title">Оформление заказа</p>
       <button class="checkout-modal__close" id="checkoutClose">✕</button>
     </div>
     <div class="checkout-summary" id="checkoutSummary"></div>
     <form class="checkout-form" id="checkoutForm">
-      <div class="form-group"><input type="text"  id="coName"    placeholder="Ваше имя" required /></div>
-      <div class="form-group"><input type="email" id="coEmail"   placeholder="Email" required /></div>
-      <div class="form-group"><input type="tel"   id="coPhone"   placeholder="Телефон" /></div>
-      <div class="form-group"><textarea id="coMessage" placeholder="Адрес доставки / комментарий..." rows="3"></textarea></div>
-      <button type="submit" class="btn btn--gold btn--full" id="coSubmitBtn">Подтвердить заказ</button>
-      <p class="form__success" id="coSuccess">✓ Заказ принят! Анета свяжется с вами в ближайшее время.</p>
-      <p class="form__error"   id="coError">Ошибка отправки. Попробуйте ещё раз.</p>
+      <div class="form-group"><input type="text"  id="coName"    data-i18n-placeholder="form_name"    placeholder="Ваше имя" required /></div>
+      <div class="form-group"><input type="email" id="coEmail"   data-i18n-placeholder="form_email"   placeholder="Email" required /></div>
+      <div class="form-group"><input type="tel"   id="coPhone"   data-i18n-placeholder="co_phone"     placeholder="Телефон" /></div>
+      <div class="form-group"><textarea id="coMessage" data-i18n-placeholder="co_message" placeholder="Адрес доставки / комментарий..." rows="3"></textarea></div>
+      <button type="submit" class="btn btn--gold btn--full" id="coSubmitBtn" data-i18n="co_submit">Подтвердить заказ</button>
+      <p class="form__success" id="coSuccess" data-i18n="co_success">✓ Заказ принят! Анета свяжется с вами в ближайшее время.</p>
+      <p class="form__error"   id="coError"   data-i18n="co_error">Ошибка отправки. Попробуйте ещё раз.</p>
     </form>
   </div>
 </div>
@@ -158,8 +169,8 @@
 <footer class="footer">
   <div class="container footer__inner">
     <img src="/media/logo/Logo_Bm_Trans.png" alt="Beautymania" class="footer__logo" />
-    <p class="footer__copy">© 2026 Beautymania by Aneta. Все права защищены.</p>
-    <p class="footer__credit">Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a></p>
+    <p class="footer__copy" data-i18n="footer_copy">© 2026 Beautymania by Aneta. Все права защищены.</p>
+    <p class="footer__credit" data-i18n="footer_credit">Создано с ♥ командой <a href="https://ambersol.co.il" target="_blank">Amber Solutions</a></p>
   </div>
 </footer>
 
