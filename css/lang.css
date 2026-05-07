@@ -108,7 +108,8 @@
 
 /* ── HEBREW FONT VARIABLES (активны только при lang=he) ── */
 html[data-lang="he"] {
-  --ff-display: 'Rubik', sans-serif;
+  /* Заголовки: Cormorant Garamond для латиницы, Rubik для иврита */
+  --ff-display: 'Cormorant Garamond', 'Rubik', Georgia, serif;
   --ff-body:    'Rubik', sans-serif;
 }
 
