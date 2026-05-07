@@ -245,6 +245,47 @@ html[data-lang="he"] .lang-switcher--mobile {
   flex-direction: row-reverse;
 }
 
+/* ── SHOP PAGE — Hebrew font size compensation ── */
+html[data-lang="he"] .shop-header .section__title {
+  font-size: clamp(2.8rem, 5.5vw, 4.4rem);
+}
+html[data-lang="he"] .shop-header__sub {
+  font-size: 1.15rem;
+}
+html[data-lang="he"] .sp-card__name {
+  font-size: 1.3rem;
+}
+html[data-lang="he"] .sp-card__desc {
+  font-size: 0.88rem;
+}
+html[data-lang="he"] .sp-card__price {
+  font-size: 1.5rem;
+}
+html[data-lang="he"] .cart-sidebar__head h3 {
+  font-size: 1.5rem;
+}
+html[data-lang="he"] #cartTotal {
+  font-size: 1.55rem;
+}
+html[data-lang="he"] .checkout-summary__total span:last-child {
+  font-size: 1.5rem;
+}
+html[data-lang="he"] .filter-chip {
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+}
+html[data-lang="he"] .shop-sort select,
+html[data-lang="he"] .shop-search__input {
+  font-size: 0.85rem;
+}
+html[data-lang="he"] .add-to-cart-btn {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+}
+html[data-lang="he"] .shop-empty {
+  font-size: 1.25rem;
+}
+
 /* Плавный переход при смене языка */
 body {
   transition: font-family 0.2s ease;
