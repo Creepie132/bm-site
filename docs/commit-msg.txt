@@ -1,9 +1,8 @@
-feat(mobile): карусель — peek-эффект, убраны кнопки nav, статичная инфо-панель с fade
+fix: restore Trinity API connection after domain migration
 
-- css/style.css: убран overflow:hidden с .bm-carousel-section; мобайл (<768px):
-  скрыты .bm-nav и .bm-info внутри слайда; .bm-carousel-outer overflow:visible (peek);
-  добавлены стили .bm-static-info, .bm-static-info__inner.fading, .bm-static-cat/name/price/buy
-- index.html: добавлен #bmStaticInfo блок между .bm-swiper-wrap и .bm-nav
-- js/main.js: updateStaticInfo(item, animated) — fade-обновление статичной панели;
-  кнопка #bmStaticBuy добавляет в bm_cart и редиректит на /shop;
-  applyProgress() вызывает updateStaticInfo при каждой смене активного слайда
+JS constants updated to app.ambersol.co.il:
+- js/main.js: TRINITY_API, PRODUCTS_API, BESTSELLERS_API
+- shop/shop.js: PRODUCTS_API, ORDER_API, RELATED_API
+- vercel.json: CSP connect-src += app.ambersol.co.il
+
+Trinity moved from ambersol.co.il/api/* to app.ambersol.co.il/api/*
