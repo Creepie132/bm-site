@@ -1,9 +1,5 @@
-feat(mobile): карусель — peek-эффект, убраны кнопки nav, статичная инфо-панель с fade
+fix: update Trinity API base URL to app.ambersol.co.il
 
-- css/style.css: убран overflow:hidden с .bm-carousel-section; мобайл (<768px):
-  скрыты .bm-nav и .bm-info внутри слайда; .bm-carousel-outer overflow:visible (peek);
-  добавлены стили .bm-static-info, .bm-static-info__inner.fading, .bm-static-cat/name/price/buy
-- index.html: добавлен #bmStaticInfo блок между .bm-swiper-wrap и .bm-nav
-- js/main.js: updateStaticInfo(item, animated) — fade-обновление статичной панели;
-  кнопка #bmStaticBuy добавляет в bm_cart и редиректит на /shop;
-  applyProgress() вызывает updateStaticInfo при каждой смене активного слайда
+js/main.js — TRINITY_API, PRODUCTS_API, BESTSELLERS_API
+shop/shop.js — PRODUCTS_API, ORDER_API, RELATED_API
+All 5 endpoints updated: ambersol.co.il → app.ambersol.co.il
