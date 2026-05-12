@@ -1,8 +1,1 @@
-fix: restore Trinity API connection after domain migration
-
-JS constants updated to app.ambersol.co.il:
-- js/main.js: TRINITY_API, PRODUCTS_API, BESTSELLERS_API
-- shop/shop.js: PRODUCTS_API, ORDER_API, RELATED_API
-- vercel.json: CSP connect-src += app.ambersol.co.il
-
-Trinity moved from ambersol.co.il/api/* to app.ambersol.co.il/api/*
+docs: update CLAUDE.md — domain migration fix 12.05.2026

@@ -742,7 +742,26 @@ bm_site — чистый статичный HTML. Нет npm, нет билда.
 
 ---
 
-## 19. Контакты и доступы
+## 19. История изменений (продолжение)
+
+### 12.05.2026
+
+**Commit c28f4a8 (bm-site)** — fix: restore Trinity API connection after domain migration
+
+**Причина:** Trinity CRM переехал с `ambersol.co.il/api/*` на `app.ambersol.co.il/api/*`. Все API-запросы с сайта beautymania падали с 404.
+
+**Что сломалось:** `js/main.js` и `shop/shop.js` содержали захардкоженные URL на старый домен. CSP в `vercel.json` не разрешал `fetch` на новый домен.
+
+**Исправлено:**
+- `js/main.js` — `TRINITY_API`, `PRODUCTS_API`, `BESTSELLERS_API` → `app.ambersol.co.il`
+- `shop/shop.js` — `PRODUCTS_API`, `ORDER_API`, `RELATED_API` → `app.ambersol.co.il`
+- `vercel.json` — CSP `connect-src` добавлен `https://app.ambersol.co.il`
+
+**Проверено:** GET /api/beautymania/products → 200, товары отображаются. POST /api/beautymania/order → 200, заказ создаётся в Trinity.
+
+**Важно на будущее:** При смене домена Trinity — менять URL в обоих JS файлах И в CSP vercel.json одновременно.
+
+
 
 | Ресурс | Данные |
 |--------|--------|
