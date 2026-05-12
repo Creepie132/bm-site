@@ -155,8 +155,8 @@ function t(key) {
 }
 
 // ─── Config ──────────────────────────────────────────────────
-const PRODUCTS_API  = 'https://app.ambersol.co.il/api/beautymania/products'
-const ORDER_API     = 'https://app.ambersol.co.il/api/beautymania/order'
+const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products'
+const ORDER_API     = 'https://ambersol.co.il/api/beautymania/order'
 const SITE_URL      = 'https://beautymania.co.il'
 const SUPABASE_URL  = 'https://tjryzcqvsavtllahjyrj.supabase.co/storage/v1/render/image/public'
 
@@ -241,7 +241,7 @@ burger?.addEventListener('click', () => {
   burger.classList.toggle('open')
 })
 
-const RELATED_API = 'https://app.ambersol.co.il/api/beautymania/related'
+const RELATED_API = 'https://ambersol.co.il/api/beautymania/related'
 
 // ─── Cart open/close ─────────────────────────────────────────
 const cartBtn     = document.getElementById('cartBtn')

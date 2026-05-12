@@ -172,8 +172,8 @@
 })();
 
 // ─── Config ──────────────────────────────────────────────────
-const TRINITY_API   = 'https://app.ambersol.co.il/api/beautymania/contact';
-const PRODUCTS_API  = 'https://app.ambersol.co.il/api/beautymania/products';
+const TRINITY_API   = 'https://ambersol.co.il/api/beautymania/contact';
+const PRODUCTS_API  = 'https://ambersol.co.il/api/beautymania/products';
 const SITE_URL      = 'https://beautymania.co.il';
 
 // ─── Traffic Attribution Tracker ─────────────────────────────
@@ -448,7 +448,7 @@ function escStr(str) {
 
 /* ── BESTSELLERS CAROUSEL ── */
 (function () {
-  const BESTSELLERS_API = 'https://app.ambersol.co.il/api/beautymania/bestsellers';
+  const BESTSELLERS_API = 'https://ambersol.co.il/api/beautymania/bestsellers';
   const SPD = 700;
 
   function getSlideW() {
